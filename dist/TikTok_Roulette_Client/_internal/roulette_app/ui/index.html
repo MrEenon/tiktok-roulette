@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Live Roulette Wheel</title>
+    <!-- Google Fonts for premium gaming feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Floating Toggle Button for Control Drawer (streamers can hide it) -->
+        <button id="drawer-toggle" class="drawer-toggle" aria-label="Toggle settings">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </button>
+
+        <!-- MAIN OVERLAY AREA (This is what OBS captures) -->
+        <main class="overlay-container">
+            <!-- Active Players List Sidebar (floating on the left) -->
+            <div id="players-sidebar" class="players-sidebar hidden">
+                <div class="sidebar-header">
+                    <h3>Players In Wheel</h3>
+                </div>
+                <div id="players-list" class="players-list">
+                    <!-- Dynamic player items go here -->
+                </div>
+            </div>
+
+            <!-- Glowing Digital Timer -->
+            <div class="timer-container">
+                <span id="timer-display" class="timer-text">0:00</span>
+            </div>
+
+            <!-- Mode Badge -->
+            <div class="badge-container">
+                <div id="mode-badge" class="mode-badge elimination-mode">
+                    <span class="badge-icon">💀</span>
+                    <span id="badge-text" class="badge-text">ELIMINATION MODE</span>
+                    <span class="badge-icon">💀</span>
+                </div>
+            </div>
+
+            <!-- Stats Bar (Pill design matching screenshot) -->
+            <div class="stats-bar">
+                <div class="stat-pill">
+                    <span class="stat-label">MIN BID</span>
+                    <div class="stat-value">
+                        <span class="coin-icon">🪙</span>
+                        <span id="stat-min-bid">1</span>
+                    </div>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-label">PLAYERS</span>
+                    <div class="stat-value">
+                        <span id="stat-players">0</span>
+                    </div>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-label">COINS</span>
+                    <div class="stat-value highlight-coins">
+                        <span id="stat-coins">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wheel Container -->
+            <div class="wheel-outer-wrapper">
+                <div class="wheel-container">
+                    <!-- Top Pointer -->
+                    <div class="pointer-wrapper">
+                        <div class="wheel-pointer"></div>
+                    </div>
+                    
+                    <!-- Canvas for Wheel Drawing -->
+                    <canvas id="wheel-canvas" width="600" height="600"></canvas>
+
+                    <!-- Wheel Center: Displays the coins needed per entry -->
+                    <div class="wheel-center">
+                        <div class="center-coin-requirement">
+                            <span class="center-coin-icon">🪙</span>
+                            <span id="center-bid-amount">1</span>
+                        </div>
+                        <span class="center-coin-label">PER ENTRY</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shuffle Grid Container -->
+            <div id="shuffle-grid-outer-wrapper" class="shuffle-grid-outer-wrapper hidden">
+                <div id="shuffle-grid-container" class="shuffle-grid-container">
+                    <!-- Dynamic player cards go here -->
+                </div>
+            </div>
+            
+            <!-- Confetti Canvas overlay for wins -->
+            <canvas id="confetti-canvas"></canvas>
+            
+            <!-- Floating announcement banner (e.g. "GiftKing wins the round!") -->
+            <div id="announcement-banner" class="announcement-banner hidden">
+                <h2 id="announcement-title">ROUND WINNER!</h2>
+                <div class="winner-info">
+                    <img id="announcement-avatar" src="" alt="" class="winner-avatar placeholder-avatar">
+                    <span id="announcement-name">PlayerName</span>
+                </div>
+                <p id="announcement-detail">Received the grand prize of 250 coins!</p>
+                <button id="announcement-dismiss" class="btn btn-primary" style="margin-top: 15px; width: 100%;">Dismiss</button>
+            </div>
+        </main>
+
+        <!-- STREAMER CONTROL PANEL (Slide-out drawer) -->
+        <aside id="control-drawer" class="control-drawer">
+            <div class="drawer-header">
+                <h2>Streamer Dashboard</h2>
+                <button id="drawer-close" class="drawer-close" aria-label="Close settings">&times;</button>
+            </div>
+            
+            <div class="drawer-body">
+                <!-- Section: Overlay Link -->
+                <div class="drawer-section">
+                    <h3>OBS Overlay Link</h3>
+                    <p class="section-desc">Copy this URL and add it as a "Browser Source" in OBS or TikTok Live Studio.</p>
+                    <div class="input-group">
+                        <input type="text" id="overlay-url" readonly value="" style="font-size: 0.8rem; background-color: #0c0c0f;">
+                        <button id="btn-copy-url" class="btn btn-primary" style="flex: 0 0 80px; border-radius: 0 6px 6px 0;">Copy</button>
+                    </div>
+                </div>
+
+                <!-- Section: Connection -->
+                <div class="drawer-section">
+                    <h3>TikTok Connection</h3>
+                    <div class="input-group">
+                        <span class="input-prefix">@</span>
+                        <input type="text" id="tiktok-username" placeholder="username" value="">
+                    </div>
+                    <div class="connection-status-row">
+                        <span class="status-indicator disconnected" id="status-indicator"></span>
+                        <span id="status-text">Disconnected</span>
+                    </div>
+                    <div class="button-row">
+                        <button id="btn-connect" class="btn btn-primary">Connect Live</button>
+                        <button id="btn-disconnect" class="btn btn-danger" disabled>Disconnect</button>
+                    </div>
+                </div>
+
+                <!-- Section: Discord Integration -->
+                <div class="drawer-section">
+                    <h3>Discord Webhook</h3>
+                    <p class="section-desc">Receive real-time Discord notifications when gifts are received.</p>
+                    
+                    <div class="settings-grid">
+                        <label for="set-discord-enabled">Enable Webhook:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-discord-enabled">
+                            <label for="set-discord-enabled" class="toggle-label"></label>
+                        </div>
+                        
+                        <label for="set-discord-url">Webhook URL:</label>
+                        <input type="text" id="set-discord-url" placeholder="https://discord.com/api/webhooks/... (paste url)" value="">
+                    </div>
+                    
+                    <div class="button-row" style="margin-top: 15px;">
+                        <button id="btn-test-discord" class="btn btn-secondary" style="width: 100%;">Send Test Notification</button>
+                    </div>
+                </div>
+
+                <!-- Section: Game Settings -->
+                <div class="drawer-section">
+                    <h3>Game Config</h3>
+                    
+                    <div class="settings-grid">
+                        <label for="set-min-bid">Min Bid (Coins):</label>
+                        <input type="number" id="set-min-bid" value="1" min="1">
+                        
+                        <label for="set-round-time">Timer (Seconds):</label>
+                        <input type="number" id="set-round-time" value="30" min="5">
+                        
+                        <label for="set-game-mode">Game Mode:</label>
+                        <select id="set-game-mode">
+                            <option value="elimination">Elimination Mode</option>
+                            <option value="winner">Winner Mode</option>
+                        </select>
+                        
+                        <label for="set-sound">Enable Sound:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-sound" checked>
+                            <label for="set-sound" class="toggle-label"></label>
+                        </div>
+                        
+                        <label for="set-shuffle-mode">Shuffle Mode:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-shuffle-mode">
+                            <label for="set-shuffle-mode" class="toggle-label"></label>
+                        </div>
+                        
+                        <label for="set-sudden-death">Sudden Death:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-sudden-death" checked>
+                            <label for="set-sudden-death" class="toggle-label"></label>
+                        </div>
+                        
+                        <label for="set-sudden-death-time" class="sudden-death-only">Sudden Death Time (Sec):</label>
+                        <input type="number" id="set-sudden-death-time" value="90" min="5" class="sudden-death-only">
+                        
+                        <label for="set-snipe-delay">Snipe Delay:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-snipe-delay">
+                            <label for="set-snipe-delay" class="toggle-label"></label>
+                        </div>
+
+                        <label for="set-snipe-time" class="snipe-only hidden">Snipe Time (Sec):</label>
+                        <input type="number" id="set-snipe-time" value="15" min="5" class="snipe-only hidden">
+
+                        <label for="set-chat-join">Comment to Join:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-chat-join">
+                            <label for="set-chat-join" class="toggle-label"></label>
+                        </div>
+                        
+                        <label for="set-join-keyword" class="chat-join-only">Join Keyword:</label>
+                        <input type="text" id="set-join-keyword" value="join" class="chat-join-only">
+                    </div>
+                    
+                    <div class="button-row" style="margin-top: 15px;">
+                        <button id="btn-pause-timer" class="btn btn-secondary" disabled>Pause Timer</button>
+                        <button id="btn-spin-now" class="btn btn-success">Force Spin</button>
+                    </div>
+                    <div class="button-row" style="margin-top: 8px;">
+                        <button id="btn-reset-game" class="btn btn-warning" style="width: 100%;">Reset Game</button>
+                    </div>
+                </div>
+
+                <!-- Section: Manual Entries -->
+                <div class="drawer-section">
+                    <h3>Manual Entries</h3>
+                    <p class="section-desc">Manually add players, gifts, or chat entries to the wheel.</p>
+                    
+                    <div class="settings-grid">
+                        <label for="sim-username">User Name:</label>
+                        <input type="text" id="sim-username" value="GiftKing">
+                        
+                        <label for="sim-coins">Coins / Value:</label>
+                        <input type="number" id="sim-coins" value="10" min="1">
+                        
+                        <label for="sim-gift">Gift Name:</label>
+                        <select id="sim-gift">
+                            <option value="Rose">Rose (1 coin)</option>
+                            <option value="Finger Heart">Finger Heart (5 coins)</option>
+                            <option value="Doughnut">Doughnut (30 coins)</option>
+                            <option value="TikTok">TikTok (1 coin)</option>
+                            <option value="Fireworks">Fireworks (1088 coins)</option>
+                            <option value="Custom">Custom (Use Coins Value)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-row" style="margin-top: 15px;">
+                        <button id="btn-sim-gift" class="btn btn-secondary">Add Gift / Entry</button>
+                        <button id="btn-sim-chat" class="btn btn-secondary">Add Chat / Comment</button>
+                    </div>
+                </div>
+
+                <!-- Section: Session Management -->
+                <div class="drawer-section">
+                    <h3>Session Management</h3>
+                    <p class="section-desc">Manage your local license session. Logging out will clear the license key from this device.</p>
+                    <div class="button-row" style="margin-top: 10px;">
+                        <button id="btn-logout" class="btn btn-danger" style="width: 100%;">Logout / Reset Key</button>
+                    </div>
+                </div>
+
+                <!-- Section: Event Feed -->
+                <div class="drawer-section">
+                    <h3>Live Feed</h3>
+                    <div id="event-feed" class="event-feed">
+                        <div class="feed-placeholder">No events yet. Start connection or simulation.</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
