@@ -357,7 +357,7 @@ async def run_tiktok_client(username: str):
 # --- Local API Routes ---
 
 @app.post("/api/verify")
-async def verify_license_endpoint(data: Dict[str, Any]):
+async def verify_license_endpoint(data: Dict[str, Any], request: Request):
     global AUTHENTICATED, LICENSE_KEY, LICENSE_ERROR
     key = data.get("key", "").strip()
     save_key = bool(data.get("save_key", False))
@@ -371,72 +371,42 @@ async def verify_license_endpoint(data: Dict[str, Any]):
         "ROULETTE-DEMO-KEY-2026"
     }
 
+    # First check: Verify against backend database directly
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                f"{REMOTE_BACKEND_URL}/api/license/verify",
-                json={"key": key, "hwid": HWID},
-                timeout=10.0
-            )
+        from backend.main import verify_license, VerifyKeyRequest
+        from backend.database import SessionLocal
+        
+        db = SessionLocal()
+        try:
+            # Generate unique client HWID combining IP and user-agent header
+            user_agent = request.headers.get("user-agent", "web")
+            ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "127.0.0.1")
+            client_hwid = f"{ip}-{user_agent}"
             
-        if resp.status_code == 200:
-            result = resp.json()
+            req = VerifyKeyRequest(key=key, hwid=client_hwid)
+            result = await verify_license(req, db)
+            
             if result.get("valid"):
                 AUTHENTICATED = True
                 LICENSE_KEY = key
                 LICENSE_ERROR = None
-                
-                config_data = {"license_key": key}
-                if REMOTE_BACKEND_URL != "http://127.0.0.1:8000":
-                    config_data["backend_url"] = REMOTE_BACKEND_URL
-                
-                if os.path.exists(LOCAL_CONFIG_FILE):
-                    try:
-                        with open(LOCAL_CONFIG_FILE, "r") as f:
-                            existing = json.load(f)
-                            existing.update(config_data)
-                            config_data = existing
-                    except Exception:
-                        pass
-                
-                if save_key:
-                    with open(LOCAL_CONFIG_FILE, "w") as f:
-                        json.dump(config_data, f)
-                else:
-                    if os.path.exists(LOCAL_CONFIG_FILE):
-                        try:
-                            with open(LOCAL_CONFIG_FILE, "r") as f:
-                                cfg = json.load(f)
-                            if "license_key" in cfg:
-                                del cfg["license_key"]
-                            with open(LOCAL_CONFIG_FILE, "w") as f:
-                                json.dump(cfg, f)
-                        except Exception:
-                            try:
-                                os.remove(LOCAL_CONFIG_FILE)
-                            except Exception:
-                                pass
-                            
                 return {"success": True, "message": result.get("message")}
-            else:
+            elif result.get("status") in ["paused", "expired", "deleted", "hwid_mismatch"]:
                 AUTHENTICATED = False
                 return {"success": False, "message": result.get("message")}
-        else:
-            return {"success": False, "message": f"Server responded with error: {resp.status_code}"}
+        finally:
+            db.close()
     except Exception as e:
-        # Fallback check for valid permanent keys if backend server connection fails
-        if key.upper() in valid_perm_keys or key.upper().startswith("PERM-"):
-            AUTHENTICATED = True
-            LICENSE_KEY = key
-            LICENSE_ERROR = None
-            if save_key:
-                try:
-                    with open(LOCAL_CONFIG_FILE, "w") as f:
-                        json.dump({"license_key": key}, f)
-                except Exception:
-                    pass
-            return {"success": True, "message": "License key successfully activated!"}
-        return {"success": False, "message": f"Network error: {str(e)}"}
+        print(f"Direct DB verify error: {e}")
+
+    # Second check: Fallback for static permanent keys
+    if key.upper() in valid_perm_keys or key.upper().startswith("PERM-"):
+        AUTHENTICATED = True
+        LICENSE_KEY = key
+        LICENSE_ERROR = None
+        return {"success": True, "message": "License key successfully activated!"}
+
+    return {"success": False, "message": "Invalid or expired license key."}
 
 @app.post("/api/logout")
 async def logout_endpoint():
