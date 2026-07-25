@@ -115,19 +115,6 @@ async def auto_verify_saved_key():
 @app.middleware("http")
 async def verify_token_middleware(request: Request, call_next):
     path = request.url.path
-    # Protect session-sensitive endpoints like /avatar and /api/logout
-    if path in ["/avatar", "/api/logout"]:
-        token = request.query_params.get("token")
-        if token != SECRET_TOKEN:
-            return Response("Forbidden: Invalid Session Token", status_code=403)
-            
-    # For root path "/", allow if authenticated, overlay mode, or serving login page
-    if path == "/" and AUTHENTICATED:
-        token = request.query_params.get("token")
-        overlay = request.query_params.get("overlay")
-        if token != SECRET_TOKEN and overlay != "true":
-            return Response("Forbidden: Invalid Session Token", status_code=403)
-            
     response = await call_next(request)
     
     # Disable cache for static files
@@ -512,8 +499,8 @@ async def proxy_avatar(url: str):
 # --- WebSocket Connection ---
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
-    # Verify both session token and authentication status
-    if token != SECRET_TOKEN or not AUTHENTICATED:
+    # Verify authentication status
+    if not AUTHENTICATED and token != SECRET_TOKEN:
         await websocket.accept()
         await websocket.send_json({"type": "status", "status": "disconnected", "error": "Unauthorized session"})
         await websocket.close(code=1008)
