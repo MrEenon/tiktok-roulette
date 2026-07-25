@@ -262,6 +262,9 @@ const dom = {
     statMinBid: document.getElementById('stat-min-bid'),
     statPlayers: document.getElementById('stat-players'),
     statCoins: document.getElementById('stat-coins'),
+    widgetTotalParticipants: document.getElementById('widget-total-participants'),
+    widgetTotalCoins: document.getElementById('widget-total-coins'),
+    widgetRoundTimer: document.getElementById('widget-round-timer'),
     centerBidAmount: document.getElementById('center-bid-amount'),
     centerGiftCount: document.getElementById('center-gift-count'),
     centerIconContainer: document.getElementById('center-icon-container'),
@@ -1085,6 +1088,10 @@ function syncStatsDisplay() {
     const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
     dom.statPlayers.textContent = uniquePlayerIds.size;
     dom.statCoins.textContent = game.totalCoins;
+    
+    if (dom.widgetTotalParticipants) dom.widgetTotalParticipants.textContent = uniquePlayerIds.size;
+    if (dom.widgetTotalCoins) dom.widgetTotalCoins.textContent = game.totalCoins;
+    
     updatePlayersListUI();
 }
 
@@ -1196,26 +1203,35 @@ function startCountdown(duration) {
 }
 
 function updateTimerDisplay() {
+    let formattedTimer = "";
     if (game.state === 'snipe_countdown' || game.state === 'paused_snipe') {
         dom.timerDisplay.classList.add('snipe-warning');
         dom.timerDisplay.classList.remove('sudden-death-warning');
+        formattedTimer = `SNIPE: ${game.timer}s`;
         dom.timerDisplay.textContent = `SNIPE: ${game.timer}`;
     } else if (game.state === 'sudden_death_countdown' || game.state === 'paused_sudden_death') {
         dom.timerDisplay.classList.remove('snipe-warning');
         dom.timerDisplay.classList.add('sudden-death-warning');
         const mins = Math.floor(game.timer / 60);
         const secs = game.timer % 60;
-        dom.timerDisplay.textContent = `SUDDEN DEATH: ${mins}:${secs.toString().padStart(2, '0')}`;
+        formattedTimer = `SUDDEN DEATH: ${mins}:${secs.toString().padStart(2, '0')}`;
+        dom.timerDisplay.textContent = formattedTimer;
     } else {
         dom.timerDisplay.classList.remove('snipe-warning');
         dom.timerDisplay.classList.remove('sudden-death-warning');
         if (game.state === 'spinning') {
+            formattedTimer = "SPINNING";
             dom.timerDisplay.textContent = "SPINNING";
         } else {
             const mins = Math.floor(game.timer / 60);
             const secs = game.timer % 60;
-            dom.timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            formattedTimer = `${mins}:${secs.toString().padStart(2, '0')}`;
+            dom.timerDisplay.textContent = formattedTimer;
         }
+    }
+
+    if (dom.widgetRoundTimer) {
+        dom.widgetRoundTimer.textContent = formattedTimer;
     }
 }
 

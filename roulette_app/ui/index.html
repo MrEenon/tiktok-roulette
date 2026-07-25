@@ -22,6 +22,33 @@
 
         <!-- MAIN OVERLAY AREA (This is what OBS captures) -->
         <main class="overlay-container">
+            <!-- TOP LEFT LIVE DASHBOARD STATS WIDGET -->
+            <div id="top-left-stats-widget" class="top-left-stats-widget">
+                <div class="top-stat-card">
+                    <div class="top-stat-icon">👥</div>
+                    <div class="top-stat-info">
+                        <span class="top-stat-label">TOTAL PARTICIPANTS</span>
+                        <span id="widget-total-participants" class="top-stat-value">0</span>
+                    </div>
+                </div>
+                
+                <div class="top-stat-card">
+                    <div class="top-stat-icon">🪙</div>
+                    <div class="top-stat-info">
+                        <span class="top-stat-label">TOTAL COINS DONATED</span>
+                        <span id="widget-total-coins" class="top-stat-value gold-text">0</span>
+                    </div>
+                </div>
+                
+                <div class="top-stat-card">
+                    <div class="top-stat-icon">⏱️</div>
+                    <div class="top-stat-info">
+                        <span class="top-stat-label">TIME UNTIL WINNER</span>
+                        <span id="widget-round-timer" class="top-stat-value timer-text">0:30</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Active Players List Sidebar (floating on the left) -->
             <div id="players-sidebar" class="players-sidebar hidden">
                 <div class="sidebar-header">
