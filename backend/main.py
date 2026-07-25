@@ -44,8 +44,13 @@ async def lifespan(app: FastAPI):
                     username=f"Permanent User {idx+1}" if idx < 3 else "Demo User",
                     notes="Permanent Lifetime Key"
                 ))
+        # Auto-migrate any previously generated older keys to have EENON- prefix
+        all_keys = db.query(LicenseKey).all()
+        for k_obj in all_keys:
+            if not k_obj.key.startswith("EENON-") and not k_obj.key.startswith("PERM-") and not k_obj.key.startswith("ROULETTE-"):
+                k_obj.key = f"EENON-{k_obj.key}"
         db.commit()
-        print("Database initialized. Seeded permanent license keys.")
+        print("Database initialized. Seeded permanent license keys and updated existing key prefixes.")
     finally:
         db.close()
     yield
