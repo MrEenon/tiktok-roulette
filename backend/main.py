@@ -263,7 +263,7 @@ async def generate_keys(
         
     generated_keys = []
     for _ in range(max(1, req.count)):
-        new_key = str(uuid.uuid4()).upper()
+        new_key = f"EENON-{str(uuid.uuid4()).upper()}"
         key_record = LicenseKey(
             key=new_key,
             status="active",
