@@ -1,8 +1,9 @@
 .venv/
 __pycache__/
-*.db
-*.zip
+*.pyc
+build/
+dist/
 *.exe
+*.zip
 .idea/
 .vscode/
-*.log
