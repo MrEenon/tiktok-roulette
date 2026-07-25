@@ -261,9 +261,13 @@ async def generate_keys(
     else:
         raise HTTPException(status_code=400, detail="Invalid duration type")
         
+    import secrets
     generated_keys = []
     for _ in range(max(1, req.count)):
-        new_key = f"EENON-{str(uuid.uuid4()).upper()}"
+        p1 = secrets.token_hex(4).upper()
+        p2 = secrets.token_hex(2).upper()
+        p3 = secrets.token_hex(2).upper()
+        new_key = f"EENON-{p1}-{p2}-{p3}"
         key_record = LicenseKey(
             key=new_key,
             status="active",
