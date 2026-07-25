@@ -24,25 +24,35 @@ async def lifespan(app: FastAPI):
             db.add(Admin(username="admin", hashed_password=hashed))
             db.commit()
             print("Database initialized. Seeded default admin account: admin / Abner@1218")
+
+        # Seed permanent keys into backend database
+        perm_keys = [
+            "PERM-0073EEF1-3E13-4B",
+            "PERM-5568360A-9387-4C",
+            "PERM-C3C9C5B1-A2A7-4F",
+            "ROULETTE-DEMO-KEY-2026"
+        ]
+        for idx, k in enumerate(perm_keys):
+            existing = db.query(LicenseKey).filter(LicenseKey.key == k).first()
+            if not existing:
+                db.add(LicenseKey(
+                    key=k,
+                    status="active",
+                    duration_type="lifetime",
+                    username=f"Permanent User {idx+1}" if idx < 3 else "Demo User",
+                    notes="Permanent Lifetime Key"
+                ))
+        db.commit()
+        print("Database initialized. Seeded permanent license keys.")
     finally:
         db.close()
     yield
 
 app = FastAPI(title="Licensing & Authentication Backend", lifespan=lifespan)
 
-origins = [
-    "null",
-    "http://127.0.0.1:8000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8001",
-    "http://localhost:8001",
-    "http://127.0.0.1:8002",
-    "http://localhost:8002",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -59,9 +69,16 @@ class NoCacheStaticFiles(StaticFiles):
         response.headers["Expires"] = "0"
         return response
 
-# Resolve the absolute path to admin_app/ui
-admin_ui_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "admin_app", "ui"))
-app.mount("/admin", NoCacheStaticFiles(directory=admin_ui_dir, html=True), name="admin")
+# Resolve the absolute path to admin_app/ui (handling PyInstaller _MEIPASS)
+if getattr(sys, 'frozen', False):
+    admin_ui_dir = os.path.join(getattr(sys, '_MEIPASS', os.path.dirname(sys.executable)), "admin_app", "ui")
+else:
+    admin_ui_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "admin_app", "ui"))
+
+if os.path.exists(admin_ui_dir):
+    app.mount("/admin", NoCacheStaticFiles(directory=admin_ui_dir, html=True), name="admin")
+else:
+    print(f"Warning: Admin UI directory not found at {admin_ui_dir}")
 
 # --- Request Schemas ---
 class VerifyKeyRequest(BaseModel):

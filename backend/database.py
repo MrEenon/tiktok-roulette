@@ -3,7 +3,14 @@ from datetime import datetime
 from sqlalchemy import create_engine, Column, String, DateTime, Integer
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///backend.db")
+import sys
+if getattr(sys, 'frozen', False):
+    db_base = os.path.dirname(sys.executable)
+    default_db_url = f"sqlite:///{os.path.join(db_base, 'backend.db')}"
+else:
+    default_db_url = "sqlite:///backend.db"
+
+DATABASE_URL = os.environ.get("DATABASE_URL", default_db_url)
 
 # Render/Heroku PostgreSQL URLs start with postgres:// but SQLAlchemy requires postgresql://
 if DATABASE_URL.startswith("postgres://"):
