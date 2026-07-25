@@ -325,6 +325,13 @@ async def update_key_status(
     db.commit()
     db.refresh(key_record)
     
+    if req.status == "paused":
+        try:
+            from roulette_app.local_server import revoke_active_session
+            await revoke_active_session(key, "Your license key was paused by the administrator.")
+        except Exception:
+            pass
+            
     ip = get_client_ip(request)
     log_admin_action(db, current_admin, f"Status Change: {req.status}", ip, f"Key: {key}")
     return key_record
@@ -345,6 +352,12 @@ async def reset_key_hwid(
     db.commit()
     db.refresh(key_record)
     
+    try:
+        from roulette_app.local_server import revoke_active_session
+        await revoke_active_session(key, "Your license key HWID was reset by the administrator.")
+    except Exception:
+        pass
+        
     ip = get_client_ip(request)
     log_admin_action(db, current_admin, "Reset HWID", ip, f"Key: {key}. Old HWID was {old_hwid}")
     return key_record
@@ -382,6 +395,12 @@ async def delete_key(
         
     db.delete(key_record)
     db.commit()
+    
+    try:
+        from roulette_app.local_server import revoke_active_session
+        await revoke_active_session(key, "Your license key was deleted by the administrator.")
+    except Exception:
+        pass
     
     ip = get_client_ip(request)
     log_admin_action(db, current_admin, "Delete Key", ip, f"Permanently deleted key: {key}")

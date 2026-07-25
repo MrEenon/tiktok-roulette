@@ -426,6 +426,57 @@ async def logout_endpoint():
             
     return {"success": True}
 
+async def revoke_active_session(key: str, reason: str = "Key paused or reset by administrator"):
+    global AUTHENTICATED, LICENSE_KEY, LICENSE_ERROR
+    if LICENSE_KEY and LICENSE_KEY.strip().upper() == key.strip().upper():
+        AUTHENTICATED = False
+        LICENSE_KEY = None
+        LICENSE_ERROR = reason
+        
+        # Disconnect TikTok Live Client if active
+        if state.client:
+            try:
+                await state.client.disconnect()
+            except Exception:
+                pass
+        if state.task and not state.task.done():
+            state.task.cancel()
+        state.status = "disconnected"
+        
+        # Broadcast logout event to browser
+        await manager.broadcast({
+            "type": "logout",
+            "message": reason
+        })
+
+async def periodic_license_checker():
+    while True:
+        await asyncio.sleep(15)
+        if AUTHENTICATED and LICENSE_KEY and not (LICENSE_KEY.upper().startswith("PERM-") or LICENSE_KEY.upper() == "ROULETTE-DEMO-KEY-2026"):
+            try:
+                from backend.database import SessionLocal, LicenseKey
+                db = SessionLocal()
+                try:
+                    k_record = db.query(LicenseKey).filter(LicenseKey.key == LICENSE_KEY).first()
+                    if not k_record or k_record.status != "active" or not k_record.hwid:
+                        reason = "Your license key was paused, deleted, or reset by the administrator."
+                        if k_record and k_record.status == "paused":
+                            reason = "Your license key is currently paused by the administrator."
+                        elif not k_record or k_record.status == "deleted":
+                            reason = "Your license key was deleted by the administrator."
+                        elif k_record and not k_record.hwid:
+                            reason = "Your license key HWID was reset by the administrator."
+                            
+                        await revoke_active_session(LICENSE_KEY, reason)
+                finally:
+                    db.close()
+            except Exception as e:
+                print(f"Periodic license check error: {e}")
+
+@app.on_event("startup")
+async def start_periodic_checker():
+    asyncio.create_task(periodic_license_checker())
+
 # --- File Serving Routes (With auth protection) ---
 
 @app.get("/")

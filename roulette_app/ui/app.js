@@ -858,6 +858,11 @@ function connectWebSocket() {
 }
 
 function handleServerMessage(msg) {
+    if (msg.type === "logout") {
+        alert(msg.message || "Your license key was paused or reset by an administrator.");
+        window.location.href = "/";
+        return;
+    }
     if (msg.type === "status") {
         // TikTok stream connection status update
         const status = msg.status;
