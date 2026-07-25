@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>License Verification - TikTok Live Roulette Wheel</title>
+    <title>EENON License Verification - TikTok Live Roulette Wheel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0c10;
-            --card-bg: rgba(26, 27, 38, 0.65);
-            --border-color: rgba(191, 149, 63, 0.25);
+            --bg-color: #05060a;
+            --card-bg: rgba(18, 20, 32, 0.75);
+            --border-color: rgba(191, 149, 63, 0.35);
             --gold-primary: #bf953f;
             --gold-light: #fcf6ba;
             --gold-dark: #b38728;
@@ -40,28 +40,14 @@
             position: relative;
         }
 
-        /* Ambient Glow Backgrounds */
-        body::before, body::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            filter: blur(150px);
+        #galaxy-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 1;
-            opacity: 0.15;
-        }
-
-        body::before {
-            background: var(--gold-primary);
-            top: -100px;
-            left: -100px;
-        }
-
-        body::after {
-            background: #af52de;
-            bottom: -100px;
-            right: -100px;
+            pointer-events: none;
         }
 
         .login-container {
@@ -74,13 +60,13 @@
 
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
             border-radius: 24px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
-                        0 0 50px rgba(191, 149, 63, 0.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7),
+                        0 0 60px rgba(191, 149, 63, 0.15);
             text-align: center;
             animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -109,7 +95,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(191, 149, 63, 0.3);
+            box-shadow: 0 0 25px rgba(191, 149, 63, 0.4);
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(191, 149, 63, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(252, 246, 186, 0.6); }
         }
 
         .logo-icon {
@@ -121,7 +113,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 26px;
             font-weight: 800;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             margin-bottom: 8px;
             background: var(--gold-grad);
             -webkit-background-clip: text;
@@ -154,10 +146,10 @@
             position: relative;
         }
 
-        input {
+        input[type="text"] {
             width: 100%;
-            background: rgba(10, 10, 15, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 10, 18, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 15px 18px;
             font-family: inherit;
@@ -167,15 +159,15 @@
             transition: all 0.3s ease;
         }
 
-        input:focus {
+        input[type="text"]:focus {
             outline: none;
             border-color: var(--gold-primary);
-            box-shadow: 0 0 10px rgba(191, 149, 63, 0.15);
+            box-shadow: 0 0 15px rgba(191, 149, 63, 0.3);
         }
 
         input::placeholder {
-            color: rgba(255, 255, 255, 0.25);
-            letter-spacing: normal;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
         }
 
         .btn-submit {
@@ -191,13 +183,13 @@
             cursor: pointer;
             letter-spacing: 1px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(191, 149, 63, 0.2);
+            box-shadow: 0 4px 15px rgba(191, 149, 63, 0.3);
             margin-top: 10px;
         }
 
         .btn-submit:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(191, 149, 63, 0.3);
+            box-shadow: 0 6px 25px rgba(191, 149, 63, 0.5);
             filter: brightness(1.1);
         }
 
@@ -218,40 +210,38 @@
             display: none;
             line-height: 1.4;
             text-align: left;
-            border-left: 4px solid transparent;
         }
 
         .message-box.error {
             display: block;
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
             color: #fca5a5;
-            border-color: var(--error-color);
         }
 
         .message-box.success {
             display: block;
-            background: rgba(16, 185, 129, 0.1);
-            color: #a7f3d0;
-            border-color: var(--success-color);
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
         }
 
         .message-box.loading {
-            display: block;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-muted);
-            border-color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(191, 149, 63, 0.15);
+            border: 1px solid rgba(191, 149, 63, 0.3);
+            color: #fde68a;
         }
 
         .spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-top-color: var(--gold-primary);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(253, 230, 138, 0.3);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
+            border-top-color: #fde68a;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
@@ -261,12 +251,14 @@
         .footer-text {
             margin-top: 30px;
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.35);
             letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
+
+    <canvas id="galaxy-canvas"></canvas>
 
     <div class="login-container">
         <div class="card">
@@ -274,7 +266,7 @@
                 <div class="logo-circle">
                     <span class="logo-icon">🔑</span>
                 </div>
-                <h1>Roulette License</h1>
+                <h1>EENON LICENSE</h1>
                 <p class="subtitle">Provide a valid key to access the application</p>
             </div>
 
@@ -282,7 +274,7 @@
                 <div class="form-group">
                     <label for="license-key">License Key</label>
                     <div class="input-wrapper">
-                        <input type="text" id="license-key" placeholder="XXXX-XXXX-XXXX-XXXX" value="{{SAVED_KEY}}" required autocomplete="off" spellcheck="false">
+                        <input type="text" id="license-key" placeholder="EENON-XXXX-XXXX-XXXX" value="{{SAVED_KEY}}" required autocomplete="off" spellcheck="false">
                     </div>
                 </div>
                 
@@ -303,12 +295,102 @@
     </div>
 
     <script>
+        // --- Animated Galaxy Background ---
+        (function() {
+            const canvas = document.getElementById('galaxy-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height, stars = [], nebulae = [], shootingStars = [];
+
+            function initGalaxy() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                
+                stars = [];
+                const numStars = Math.floor((width * height) / 2500);
+                for (let i = 0; i < numStars; i++) {
+                    stars.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        radius: Math.random() * 1.8 + 0.3,
+                        color: ['#ffffff', '#fcf6ba', '#bf953f', '#d8b4fe', '#93c5fd', '#c084fc'][Math.floor(Math.random() * 6)],
+                        alpha: Math.random(),
+                        speed: Math.random() * 0.02 + 0.005,
+                        vx: (Math.random() - 0.5) * 0.15,
+                        vy: (Math.random() - 0.5) * 0.15
+                    });
+                }
+
+                nebulae = [
+                    { x: width * 0.25, y: height * 0.35, r: 400, color: 'rgba(147, 51, 234, 0.18)', vx: 0.12, vy: 0.06 },
+                    { x: width * 0.75, y: height * 0.65, r: 450, color: 'rgba(191, 149, 63, 0.15)', vx: -0.09, vy: 0.09 },
+                    { x: width * 0.5, y: height * 0.2, r: 350, color: 'rgba(59, 130, 246, 0.15)', vx: 0.07, vy: -0.07 }
+                ];
+            }
+
+            function drawGalaxy() {
+                ctx.fillStyle = '#05060a';
+                ctx.fillRect(0, 0, width, height);
+
+                // Nebulae
+                nebulae.forEach(n => {
+                    n.x += n.vx;
+                    n.y += n.vy;
+                    if (n.x < -100 || n.x > width + 100) n.vx *= -1;
+                    if (n.y < -100 || n.y > height + 100) n.vy *= -1;
+
+                    const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+                    grad.addColorStop(0, n.color);
+                    grad.addColorStop(1, 'transparent');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Stars
+                stars.forEach(s => {
+                    s.alpha += s.speed;
+                    if (s.alpha > 1 || s.alpha < 0.15) s.speed *= -1;
+                    s.x += s.vx;
+                    s.y += s.vy;
+                    if (s.x < 0) s.x = width;
+                    if (s.x > width) s.x = 0;
+                    if (s.y < 0) s.y = height;
+                    if (s.y > height) s.y = 0;
+
+                    ctx.save();
+                    ctx.globalAlpha = Math.abs(s.alpha);
+                    ctx.fillStyle = s.color;
+                    ctx.shadowColor = s.color;
+                    ctx.shadowBlur = s.radius * 3;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+
+                requestAnimationFrame(drawGalaxy);
+            }
+
+            window.addEventListener('resize', initGalaxy);
+            initGalaxy();
+            drawGalaxy();
+        })();
+
+        // --- License Form Verification ---
         const form = document.getElementById("login-form");
         const keyInput = document.getElementById("license-key");
         const submitBtn = document.getElementById("submit-btn");
         const messageBox = document.getElementById("message");
 
-        // Helper to show messages
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        const startupError = `{{STARTUP_ERROR}}`;
+        if (startupError && startupError !== '{{' + 'STARTUP_ERROR}}') {
+            showMessage(startupError, 'error');
+        }
+
         function showMessage(text, type) {
             messageBox.className = `message-box ${type}`;
             if (type === 'loading') {
@@ -316,16 +398,6 @@
             } else {
                 messageBox.textContent = text;
             }
-        }
-
-        // Get the token from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-
-        // Handle startup errors
-        const startupError = `{{STARTUP_ERROR}}`;
-        if (startupError && startupError !== '{{' + 'STARTUP_ERROR}}') {
-            showMessage(startupError, 'error');
         }
 
         form.addEventListener("submit", async (e) => {
