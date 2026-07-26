@@ -203,6 +203,12 @@ body.transparent-bg #announcement-dismiss {
     box-shadow: 0 0 20px rgba(46, 204, 113, 0.8), 0 0 40px rgba(46, 204, 113, 0.4);
 }
 
+.mode-badge.locked-badge {
+    background: linear-gradient(180deg, #c0182c 0%, #700b17 100%);
+    border: 2px solid #ff4d66;
+    box-shadow: 0 0 20px rgba(255, 45, 85, 0.8), 0 0 40px rgba(255, 45, 85, 0.4);
+}
+
 .badge-text {
     font-size: 1.1rem;
     font-weight: 800;

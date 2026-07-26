@@ -224,7 +224,8 @@ const game = {
         joinKeyword: 'join',
         shuffleModeEnabled: false,
         suddenDeathEnabled: true,
-        suddenDeathTime: 90
+        suddenDeathTime: 90,
+        entriesLocked: false
     },
     // Engine states
     state: 'idle', // 'idle', 'countdown', 'spinning', 'result'
@@ -281,6 +282,8 @@ const dom = {
     setRoundTime: document.getElementById('set-round-time'),
     setGameMode: document.getElementById('set-game-mode'),
     setSound: document.getElementById('set-sound'),
+    setLockEntries: document.getElementById('set-lock-entries'),
+    lockedBadgeContainer: document.getElementById('locked-badge-container'),
     setShuffleMode: document.getElementById('set-shuffle-mode'),
     setSuddenDeath: document.getElementById('set-sudden-death'),
     setSuddenDeathTime: document.getElementById('set-sudden-death-time'),
@@ -404,6 +407,7 @@ function setupEventHandlers() {
     dom.setMinBid.addEventListener('change', sendSettingsUpdate);
     dom.setRoundTime.addEventListener('change', sendSettingsUpdate);
     dom.setGameMode.addEventListener('change', sendSettingsUpdate);
+    if (dom.setLockEntries) dom.setLockEntries.addEventListener('change', sendSettingsUpdate);
 
     // Discord Webhook Settings Updates
     if (dom.setDiscordUrl && dom.setDiscordEnabled) {
@@ -671,8 +675,9 @@ function sendSettingsUpdate() {
     const shuffleModeEnabled = dom.setShuffleMode ? dom.setShuffleMode.checked : game.config.shuffleModeEnabled;
     const suddenDeathEnabled = dom.setSuddenDeath ? dom.setSuddenDeath.checked : game.config.suddenDeathEnabled;
     const suddenDeathTime = dom.setSuddenDeathTime ? Math.max(5, parseInt(dom.setSuddenDeathTime.value) || 90) : game.config.suddenDeathTime;
+    const entriesLocked = dom.setLockEntries ? dom.setLockEntries.checked : game.config.entriesLocked;
     
-    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime };
+    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked };
     
     if (game.ws && game.ws.readyState === WebSocket.OPEN) {
         game.ws.send(JSON.stringify({
@@ -700,6 +705,18 @@ function applySettingsUpdate(data) {
     game.config.minBid = data.minBid;
     game.config.roundTime = data.roundTime;
     game.config.gameMode = data.gameMode;
+    
+    if (data.entriesLocked !== undefined) {
+        game.config.entriesLocked = data.entriesLocked;
+        if (dom.setLockEntries) dom.setLockEntries.checked = data.entriesLocked;
+        if (dom.lockedBadgeContainer) {
+            if (data.entriesLocked) {
+                dom.lockedBadgeContainer.classList.remove('hidden');
+            } else {
+                dom.lockedBadgeContainer.classList.add('hidden');
+            }
+        }
+    }
     
     if (data.snipeDelayEnabled !== undefined) {
         game.config.snipeDelayEnabled = data.snipeDelayEnabled;
@@ -973,6 +990,11 @@ function handleServerMessage(msg) {
 // --- 6. Core Game Logic (Timer, Bids, Spin, Win) ---
 
 function registerPlayerBid(uniqueId, nickname, avatarUrl, coins, giftName) {
+    if (game.config.entriesLocked) {
+        addLog(`🔒 Entry ignored from ${nickname} (@${uniqueId}) - ENTRIES ARE LOCKED.`, 'warning');
+        return;
+    }
+
     // Queue bids received while spinning or showing results
     if (game.state === 'spinning' || game.state === 'result') {
         game.bidQueue.push({ uniqueId, nickname, avatarUrl, coins, giftName });

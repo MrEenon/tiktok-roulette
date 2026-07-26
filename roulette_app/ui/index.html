@@ -73,6 +73,15 @@
                 </div>
             </div>
 
+            <!-- Locked Entries Badge -->
+            <div id="locked-badge-container" class="badge-container hidden" style="margin-top: -15px; margin-bottom: 25px;">
+                <div class="mode-badge locked-badge">
+                    <span class="badge-icon">🔒</span>
+                    <span class="badge-text">LOCKED ENTRIES - DO NOT SEND</span>
+                    <span class="badge-icon">🔒</span>
+                </div>
+            </div>
+
             <!-- Stats Bar (Pill design matching screenshot) -->
             <div class="stats-bar">
                 <div class="stat-pill">
@@ -217,6 +226,12 @@
                         <div class="toggle-switch">
                             <input type="checkbox" id="set-sound" checked>
                             <label for="set-sound" class="toggle-label"></label>
+                        </div>
+
+                        <label for="set-lock-entries">Lock Entries:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-lock-entries">
+                            <label for="set-lock-entries" class="toggle-label"></label>
                         </div>
                         
                         <label for="set-shuffle-mode">Shuffle Mode:</label>
