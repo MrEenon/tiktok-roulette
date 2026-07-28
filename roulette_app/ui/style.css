@@ -865,7 +865,6 @@ body.transparent-bg #announcement-dismiss {
     top: 50%;
     transform: translateY(-50%);
     width: 250px;
-    max-height: 65vh;
     background: rgba(10, 10, 12, 0.75);
     backdrop-filter: blur(12px) saturate(150%);
     border: 1.5px solid rgba(191, 149, 63, 0.35);
@@ -903,12 +902,13 @@ body.transparent-bg #announcement-dismiss {
 }
 
 .players-sidebar .players-list {
-    flex: 1;
+    max-height: 348px;          /* Show exactly 6 player rows (58px each) */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 8px;
     padding-right: 4px;
+    scroll-behavior: smooth;
 }
 
 /* Custom Scrollbar for Players List */
@@ -1036,8 +1036,10 @@ body.transparent-bg #announcement-dismiss {
     .players-sidebar {
         width: 220px;
         left: 20px;
-        max-height: 60vh;
         padding: 12px;
+    }
+    .players-sidebar .players-list {
+        max-height: 288px;      /* 6 rows at smaller size */
     }
     .player-list-item {
         padding: 6px 8px;
