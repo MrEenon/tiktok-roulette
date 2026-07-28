@@ -1,9 +1,15 @@
 services:
   - type: web
-    name: roulette-app
+    name: tiktok-roulette
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: roulette-db
+          property: connectionString
+
+databases:
+  - name: roulette-db
+    plan: free
