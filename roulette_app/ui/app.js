@@ -869,12 +869,16 @@ function initOverlayConfig() {
         });
     }
     
-    // Auto transparent background and hide gear icon if overlay URL parameter is set
+    // Auto transparent background and hide gear icon & stats widget if overlay URL parameter is set
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('overlay') === 'true') {
         document.body.classList.add('transparent-bg');
         if (dom.drawerToggle) {
             dom.drawerToggle.style.display = 'none';
+        }
+        const topLeftWidget = document.getElementById('top-left-stats-widget');
+        if (topLeftWidget) {
+            topLeftWidget.style.display = 'none';
         }
     }
 }

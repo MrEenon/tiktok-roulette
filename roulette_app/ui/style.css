@@ -1294,6 +1294,11 @@ body.transparent-bg #announcement-dismiss {
 }
 
 /* Top Left Live Dashboard Stats Widget */
+body.transparent-bg .top-left-stats-widget,
+body.transparent-bg #top-left-stats-widget {
+    display: none !important;
+}
+
 .top-left-stats-widget {
     position: fixed !important;
     top: 25px !important;
