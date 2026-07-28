@@ -1160,7 +1160,6 @@ function syncStatsDisplay() {
     if (dom.widgetTotalParticipants) dom.widgetTotalParticipants.textContent = uniquePlayerIds.size;
     if (dom.widgetTotalCoins) dom.widgetTotalCoins.textContent = game.totalCoins;
     
-    checkAutoIncreaseBids();
     updateRevenueGoalWidget();
     updatePlayersListUI();
 }
@@ -1410,6 +1409,9 @@ function triggerSpin(winnerIdx) {
 
 function resolveSpinResult(winningEntryIndex) {
     game.state = 'result';
+    
+    // Evaluate if revenue goal milestone was hit and increase min bid for subsequent bids/rounds after spin completes
+    checkAutoIncreaseBids();
     
     const winningEntry = game.entries[winningEntryIndex];
     if (!winningEntry) {
