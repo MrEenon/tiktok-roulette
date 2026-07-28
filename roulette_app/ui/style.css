@@ -902,13 +902,15 @@ body.transparent-bg #announcement-dismiss {
 }
 
 .players-sidebar .players-list {
-    max-height: 348px;          /* Show exactly 6 player rows (58px each) */
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-right: 4px;
-    scroll-behavior: smooth;
+    height: 294px !important;
+    max-height: 294px !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding-right: 4px !important;
+    scroll-behavior: smooth !important;
+    box-sizing: border-box !important;
 }
 
 /* Custom Scrollbar for Players List */
@@ -930,94 +932,101 @@ body.transparent-bg #announcement-dismiss {
     background: rgba(191, 149, 63, 0.7);
 }
 
-/* Player Item */
+/* Player Item - STRICT 44px HEIGHT FOR EXACTLY 6 PLAYERS FIT ( (6 * 44) + (5 * 6) = 294px ) */
 .player-list-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    height: 44px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 6px 10px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
     transition: all 0.25s ease-out;
     animation: slide-in-player 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
 }
 
 .player-list-item:hover {
-    background: rgba(191, 149, 63, 0.06);
-    border-color: rgba(191, 149, 63, 0.4);
+    background: rgba(191, 149, 63, 0.06) !important;
+    border-color: rgba(191, 149, 63, 0.4) !important;
     transform: translateX(4px);
     box-shadow: 0 4px 12px rgba(191, 149, 63, 0.1);
 }
 
 /* Avatar Wrapper */
 .player-list-item .player-avatar-wrapper {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    position: relative;
-    border: 2px solid transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    border: 2px solid transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
 }
 
 .player-list-item .player-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
 }
 
 .player-list-item .player-avatar-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-    color: #0c0c0f;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    color: #0c0c0f !important;
 }
 
 /* Player Details */
 .player-list-item .player-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
 }
 
 .player-list-item .player-name {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #ffffff;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    line-height: 1.1 !important;
 }
 
 .player-list-item .player-stats {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin-top: 1px;
+    font-size: 0.62rem !important;
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+    margin-top: 1px !important;
+    line-height: 1.1 !important;
 }
 
 /* Percentage / Probability Badge */
 .player-list-item .player-probability {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #ffd83b;
-    background: rgba(255, 216, 59, 0.1);
-    border: 1px solid rgba(255, 216, 59, 0.25);
-    padding: 2px 6px;
-    border-radius: 6px;
-    flex-shrink: 0;
-    text-shadow: 0 0 5px rgba(255, 216, 59, 0.2);
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: #ffd83b !important;
+    background: rgba(255, 216, 59, 0.1) !important;
+    border: 1px solid rgba(255, 216, 59, 0.25) !important;
+    padding: 2px 5px !important;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
+    text-shadow: 0 0 5px rgba(255, 216, 59, 0.2) !important;
 }
 
 @keyframes slide-in-player {
@@ -1034,19 +1043,19 @@ body.transparent-bg #announcement-dismiss {
 /* Responsive adjust for shorter screens */
 @media (max-height: 700px) {
     .players-sidebar {
-        width: 220px;
-        left: 20px;
-        padding: 12px;
+        width: 220px !important;
+        left: 20px !important;
+        padding: 12px !important;
     }
     .players-sidebar .players-list {
-        max-height: 288px;      /* 6 rows at smaller size */
+        height: 250px !important;
+        max-height: 250px !important;
     }
     .player-list-item {
-        padding: 6px 8px;
-    }
-    .player-list-item .player-avatar-wrapper {
-        width: 28px;
-        height: 28px;
+        min-height: 37px !important;
+        max-height: 37px !important;
+        height: 37px !important;
+        padding: 4px 8px !important;
     }
 }
 

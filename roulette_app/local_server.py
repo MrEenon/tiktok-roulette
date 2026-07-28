@@ -509,7 +509,8 @@ async def get_app():
     if AUTHENTICATED:
         app_js_path = os.path.join(UI_DIR, "app.js")
         if os.path.exists(app_js_path):
-            return FileResponse(app_js_path, media_type="application/javascript")
+            headers = {"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0", "Pragma": "no-cache", "Expires": "0"}
+            return FileResponse(app_js_path, media_type="application/javascript", headers=headers)
         return Response(status_code=404)
     return Response("Unauthorized", status_code=401)
 
@@ -517,7 +518,8 @@ async def get_app():
 async def get_style():
     style_css_path = os.path.join(UI_DIR, "style.css")
     if os.path.exists(style_css_path):
-        return FileResponse(style_css_path, media_type="text/css")
+        headers = {"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0", "Pragma": "no-cache", "Expires": "0"}
+        return FileResponse(style_css_path, media_type="text/css", headers=headers)
     return Response(status_code=404)
 
 
