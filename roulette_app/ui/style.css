@@ -1294,11 +1294,6 @@ body.transparent-bg #announcement-dismiss {
 }
 
 /* Top Left Live Dashboard Stats Widget */
-body.transparent-bg .top-left-stats-widget,
-body.transparent-bg #top-left-stats-widget {
-    display: none !important;
-}
-
 .top-left-stats-widget {
     position: fixed !important;
     top: 25px !important;
@@ -1310,6 +1305,14 @@ body.transparent-bg #top-left-stats-widget {
     pointer-events: none !important;
     align-items: flex-start !important;
     text-align: left !important;
+}
+
+body.transparent-bg .top-left-stats-widget,
+body.transparent-bg #top-left-stats-widget {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 .top-stat-card {
