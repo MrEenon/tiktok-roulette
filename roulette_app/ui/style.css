@@ -1367,9 +1367,33 @@ body.transparent-bg #announcement-dismiss {
     text-shadow: 0 0 10px rgba(245, 199, 93, 0.4) !important;
 }
 
+.top-stat-value.green-text {
+    color: #2ecc71 !important;
+    text-shadow: 0 0 10px rgba(46, 204, 113, 0.4) !important;
+}
+
 .top-stat-value.timer-text {
     color: #ff5e00 !important;
     text-shadow: 0 0 10px rgba(255, 94, 0, 0.5) !important;
+}
+
+/* Revenue Goal Progress Bar */
+.revenue-progress-bar-track {
+    width: 100% !important;
+    height: 8px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    margin-top: 6px !important;
+    border: 1px solid rgba(46, 204, 113, 0.2) !important;
+}
+
+.revenue-progress-bar-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #27ae60, #2ecc71, #f1c40f) !important;
+    border-radius: 4px !important;
+    transition: width 0.4s ease-out !important;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.6) !important;
 }
 
 

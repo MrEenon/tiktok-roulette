@@ -225,8 +225,12 @@ const game = {
         shuffleModeEnabled: false,
         suddenDeathEnabled: true,
         suddenDeathTime: 90,
-        entriesLocked: false
+        entriesLocked: false,
+        autoIncreaseBids: false,
+        autoIncreaseGoal: 10.0,
+        autoIncreaseStep: 250
     },
+    lastMilestonesHit: 0,
     // Engine states
     state: 'idle', // 'idle', 'countdown', 'spinning', 'result'
     timer: 30,
@@ -284,6 +288,12 @@ const dom = {
     setSound: document.getElementById('set-sound'),
     setLockEntries: document.getElementById('set-lock-entries'),
     lockedBadgeContainer: document.getElementById('locked-badge-container'),
+    setAutoIncrease: document.getElementById('set-auto-increase'),
+    setAutoIncreaseGoal: document.getElementById('set-auto-increase-goal'),
+    setAutoIncreaseStep: document.getElementById('set-auto-increase-step'),
+    topStatRevenueCard: document.getElementById('top-stat-revenue-card'),
+    widgetRevenueText: document.getElementById('widget-revenue-text'),
+    widgetRevenueProgress: document.getElementById('widget-revenue-progress'),
     setShuffleMode: document.getElementById('set-shuffle-mode'),
     setSuddenDeath: document.getElementById('set-sudden-death'),
     setSuddenDeathTime: document.getElementById('set-sudden-death-time'),
@@ -408,6 +418,9 @@ function setupEventHandlers() {
     dom.setRoundTime.addEventListener('change', sendSettingsUpdate);
     dom.setGameMode.addEventListener('change', sendSettingsUpdate);
     if (dom.setLockEntries) dom.setLockEntries.addEventListener('change', sendSettingsUpdate);
+    if (dom.setAutoIncrease) dom.setAutoIncrease.addEventListener('change', sendSettingsUpdate);
+    if (dom.setAutoIncreaseGoal) dom.setAutoIncreaseGoal.addEventListener('change', sendSettingsUpdate);
+    if (dom.setAutoIncreaseStep) dom.setAutoIncreaseStep.addEventListener('change', sendSettingsUpdate);
 
     // Discord Webhook Settings Updates
     if (dom.setDiscordUrl && dom.setDiscordEnabled) {
@@ -676,8 +689,11 @@ function sendSettingsUpdate() {
     const suddenDeathEnabled = dom.setSuddenDeath ? dom.setSuddenDeath.checked : game.config.suddenDeathEnabled;
     const suddenDeathTime = dom.setSuddenDeathTime ? Math.max(5, parseInt(dom.setSuddenDeathTime.value) || 90) : game.config.suddenDeathTime;
     const entriesLocked = dom.setLockEntries ? dom.setLockEntries.checked : game.config.entriesLocked;
+    const autoIncreaseBids = dom.setAutoIncrease ? dom.setAutoIncrease.checked : game.config.autoIncreaseBids;
+    const autoIncreaseGoal = dom.setAutoIncreaseGoal ? Math.max(1, parseFloat(dom.setAutoIncreaseGoal.value) || 10.0) : game.config.autoIncreaseGoal;
+    const autoIncreaseStep = dom.setAutoIncreaseStep ? Math.max(1, parseInt(dom.setAutoIncreaseStep.value) || 250) : game.config.autoIncreaseStep;
     
-    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked };
+    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked, autoIncreaseBids, autoIncreaseGoal, autoIncreaseStep };
     
     if (game.ws && game.ws.readyState === WebSocket.OPEN) {
         game.ws.send(JSON.stringify({
@@ -769,6 +785,30 @@ function applySettingsUpdate(data) {
         if (dom.setSuddenDeathTime) dom.setSuddenDeathTime.value = data.suddenDeathTime;
     }
     
+    if (data.autoIncreaseBids !== undefined) {
+        game.config.autoIncreaseBids = data.autoIncreaseBids;
+        if (dom.setAutoIncrease) dom.setAutoIncrease.checked = data.autoIncreaseBids;
+        
+        const autoElements = document.querySelectorAll('.auto-increase-only');
+        autoElements.forEach(el => {
+            if (data.autoIncreaseBids) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+    }
+
+    if (data.autoIncreaseGoal !== undefined) {
+        game.config.autoIncreaseGoal = data.autoIncreaseGoal;
+        if (dom.setAutoIncreaseGoal) dom.setAutoIncreaseGoal.value = data.autoIncreaseGoal;
+    }
+
+    if (data.autoIncreaseStep !== undefined) {
+        game.config.autoIncreaseStep = data.autoIncreaseStep;
+        if (dom.setAutoIncreaseStep) dom.setAutoIncreaseStep.value = data.autoIncreaseStep;
+    }
+    
     // Sync input values if they exist on this client
     if (dom.setMinBid) dom.setMinBid.value = data.minBid;
     if (dom.setRoundTime) dom.setRoundTime.value = data.roundTime;
@@ -777,6 +817,7 @@ function applySettingsUpdate(data) {
     // Update display widgets
     dom.statMinBid.textContent = game.config.minBid;
     dom.centerBidAmount.textContent = game.config.minBid;
+    updateRevenueGoalWidget();
     
     if (game.state === 'idle') {
         game.timer = game.config.roundTime;
@@ -1114,7 +1155,51 @@ function syncStatsDisplay() {
     if (dom.widgetTotalParticipants) dom.widgetTotalParticipants.textContent = uniquePlayerIds.size;
     if (dom.widgetTotalCoins) dom.widgetTotalCoins.textContent = game.totalCoins;
     
+    checkAutoIncreaseBids();
+    updateRevenueGoalWidget();
     updatePlayersListUI();
+}
+
+function updateRevenueGoalWidget() {
+    if (!dom.widgetRevenueText || !dom.widgetRevenueProgress) return;
+    
+    const totalEarnings = (game.totalCoins || 0) * 0.0105;
+    const dollarGoal = Math.max(1, parseFloat(game.config.autoIncreaseGoal) || 10.0);
+    
+    const currentMilestoneIndex = Math.floor(totalEarnings / dollarGoal);
+    const milestoneTarget = (currentMilestoneIndex + 1) * dollarGoal;
+    
+    const segmentStart = currentMilestoneIndex * dollarGoal;
+    const progressInSegment = totalEarnings - segmentStart;
+    const progressPct = Math.min(100, Math.max(0, (progressInSegment / dollarGoal) * 100));
+    
+    dom.widgetRevenueText.textContent = `$${totalEarnings.toFixed(2)} / $${milestoneTarget.toFixed(2)}`;
+    dom.widgetRevenueProgress.style.width = `${progressPct.toFixed(1)}%`;
+}
+
+function checkAutoIncreaseBids() {
+    if (!game.config.autoIncreaseBids) return;
+    
+    const totalEarnings = (game.totalCoins || 0) * 0.0105;
+    const dollarGoal = Math.max(1, parseFloat(game.config.autoIncreaseGoal) || 10.0);
+    const stepCoins = Math.max(1, parseInt(game.config.autoIncreaseStep) || 250);
+    
+    const milestonesHit = Math.floor(totalEarnings / dollarGoal);
+    const lastHit = game.lastMilestonesHit || 0;
+    
+    if (milestonesHit > lastHit) {
+        const stepsToAdd = milestonesHit - lastHit;
+        game.lastMilestonesHit = milestonesHit;
+        
+        const newMinBid = game.config.minBid + (stepsToAdd * stepCoins);
+        game.config.minBid = newMinBid;
+        
+        if (dom.setMinBid) dom.setMinBid.value = newMinBid;
+        
+        sendSettingsUpdate();
+        
+        addLog(`🚀 REVENUE GOAL HIT ($${(milestonesHit * dollarGoal).toFixed(2)})! Min bid increased by +${stepsToAdd * stepCoins} to 🪙 ${newMinBid} coins!`, 'warning');
+    }
 }
 
 function updatePlayersListUI() {
@@ -1509,6 +1594,7 @@ function resetGame() {
     game.shuffleGridActiveIndex = -1;
     game.snipeTargetChampion = null;
     game.suddenDeathTriggered = false;
+    game.lastMilestonesHit = 0;
     
     dom.btnPauseTimer.textContent = "Pause Timer";
     dom.btnPauseTimer.className = "btn btn-secondary";

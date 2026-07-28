@@ -47,6 +47,19 @@
                         <span id="widget-round-timer" class="top-stat-value timer-text">0:30</span>
                     </div>
                 </div>
+
+                <div id="top-stat-revenue-card" class="top-stat-card auto-increase-only hidden">
+                    <div class="top-stat-icon">💵</div>
+                    <div class="top-stat-info" style="width: 100%;">
+                        <div class="top-stat-header-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <span class="top-stat-label">REVENUE GOAL</span>
+                            <span id="widget-revenue-text" class="top-stat-value green-text">$0.00 / $10.00</span>
+                        </div>
+                        <div class="revenue-progress-bar-track">
+                            <div id="widget-revenue-progress" class="revenue-progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Active Players List Sidebar (floating on the left) -->
@@ -233,6 +246,18 @@
                             <input type="checkbox" id="set-lock-entries">
                             <label for="set-lock-entries" class="toggle-label"></label>
                         </div>
+                        
+                        <label for="set-auto-increase">Auto Increase Bids:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-auto-increase">
+                            <label for="set-auto-increase" class="toggle-label"></label>
+                        </div>
+
+                        <label for="set-auto-increase-goal" class="auto-increase-only hidden">Dollar Goal ($):</label>
+                        <input type="number" id="set-auto-increase-goal" value="10" min="1" step="1" class="auto-increase-only hidden">
+
+                        <label for="set-auto-increase-step" class="auto-increase-only hidden">Increase Entry By (+Coins):</label>
+                        <input type="number" id="set-auto-increase-step" value="250" min="1" step="1" class="auto-increase-only hidden">
                         
                         <label for="set-shuffle-mode">Shuffle Mode:</label>
                         <div class="toggle-switch">
