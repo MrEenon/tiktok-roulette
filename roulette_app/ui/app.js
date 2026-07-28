@@ -1119,11 +1119,12 @@ function registerPlayerBid(uniqueId, nickname, avatarUrl, coins, giftName) {
     }
     
     // Add equal-sized slices (entries) for the player.
-    // Each entry costs exactly game.config.minBid coins.
+    // Each entry costs exactly game.config.minBid coins at the time it was entered.
     for (let i = 0; i < entriesToAdd; i++) {
         game.entries.push({
             id: Math.random().toString(36).substring(2, 9),
-            player: player
+            player: player,
+            coins: game.config.minBid
         });
     }
     
@@ -1147,7 +1148,7 @@ function registerPlayerBid(uniqueId, nickname, avatarUrl, coins, giftName) {
 }
 
 function recalculateCoinsAndPlayers() {
-    game.totalCoins = game.entries.length * game.config.minBid;
+    game.totalCoins = game.entries.reduce((sum, entry) => sum + (entry.coins || game.config.minBid), 0);
     syncStatsDisplay();
 }
 
