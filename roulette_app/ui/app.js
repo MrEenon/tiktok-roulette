@@ -1410,9 +1410,6 @@ function triggerSpin(winnerIdx) {
 function resolveSpinResult(winningEntryIndex) {
     game.state = 'result';
     
-    // Evaluate if revenue goal milestone was hit and increase min bid for subsequent bids/rounds after spin completes
-    checkAutoIncreaseBids();
-    
     const winningEntry = game.entries[winningEntryIndex];
     if (!winningEntry) {
         resetGame();
@@ -1478,7 +1475,8 @@ function resolveSpinResult(winningEntryIndex) {
         }, 1000);
         
     } else {
-        // Winner Mode
+        // Winner Mode - round completed!
+        checkAutoIncreaseBids();
         audio.playWin();
         confetti.start();
         
@@ -1537,6 +1535,7 @@ function startSuddenDeathCountdown() {
 }
 
 function declareGrandChampion(champion) {
+    checkAutoIncreaseBids();
     audio.playWin();
     confetti.start();
     
