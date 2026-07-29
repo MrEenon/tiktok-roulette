@@ -212,6 +212,7 @@ const game = {
     entries: [],
     // Total coins currently in the wheel
     totalCoins: 0,
+    totalCoinsEarnedThisRound: 0,
     // Game configurations
     config: {
         minBid: 1,
@@ -1118,6 +1119,9 @@ function registerPlayerBid(uniqueId, nickname, avatarUrl, coins, giftName) {
         addLog(`🎯 SNIPE SUCCESSFUL! ${nickname} joined the wheel to challenge! Resuming auction.`, 'info');
     }
     
+    // Track cumulative total coins gifted for this round
+    game.totalCoinsEarnedThisRound = (game.totalCoinsEarnedThisRound || 0) + (entriesToAdd * game.config.minBid);
+    
     // Add equal-sized slices (entries) for the player.
     // Each entry costs exactly game.config.minBid coins at the time it was entered.
     for (let i = 0; i < entriesToAdd; i++) {
@@ -1167,7 +1171,7 @@ function syncStatsDisplay() {
 function updateRevenueGoalWidget() {
     if (!dom.widgetRevenueText || !dom.widgetRevenueProgress) return;
     
-    const totalEarnings = (game.totalCoins || 0) * 0.0105;
+    const totalEarnings = (game.totalCoinsEarnedThisRound || 0) * 0.0105;
     const dollarGoal = Math.max(1, parseFloat(game.config.autoIncreaseGoal) || 10.0);
     const progressPct = Math.min(100, Math.max(0, (totalEarnings / dollarGoal) * 100));
     
@@ -1178,7 +1182,7 @@ function updateRevenueGoalWidget() {
 function checkAutoIncreaseBids() {
     if (!game.config.autoIncreaseBids) return;
     
-    const totalEarnings = (game.totalCoins || 0) * 0.0105;
+    const totalEarnings = (game.totalCoinsEarnedThisRound || 0) * 0.0105;
     const dollarGoal = Math.max(1, parseFloat(game.config.autoIncreaseGoal) || 10.0);
     const stepCoins = Math.max(1, parseInt(game.config.autoIncreaseStep) || 250);
     
@@ -1592,6 +1596,7 @@ function resetGame() {
     game.snipeTargetChampion = null;
     game.suddenDeathTriggered = false;
     game.roundAutoIncreased = false;
+    game.totalCoinsEarnedThisRound = 0;
     
     dom.btnPauseTimer.textContent = "Pause Timer";
     dom.btnPauseTimer.className = "btn btn-secondary";
