@@ -230,7 +230,7 @@ const game = {
         autoIncreaseGoal: 10.0,
         autoIncreaseStep: 250
     },
-    lastMilestonesHit: 0,
+    roundAutoIncreased: false,
     // Engine states
     state: 'idle', // 'idle', 'countdown', 'spinning', 'result'
     timer: 30,
@@ -1169,15 +1169,9 @@ function updateRevenueGoalWidget() {
     
     const totalEarnings = (game.totalCoins || 0) * 0.0105;
     const dollarGoal = Math.max(1, parseFloat(game.config.autoIncreaseGoal) || 10.0);
+    const progressPct = Math.min(100, Math.max(0, (totalEarnings / dollarGoal) * 100));
     
-    const currentMilestoneIndex = Math.floor(totalEarnings / dollarGoal);
-    const milestoneTarget = (currentMilestoneIndex + 1) * dollarGoal;
-    
-    const segmentStart = currentMilestoneIndex * dollarGoal;
-    const progressInSegment = totalEarnings - segmentStart;
-    const progressPct = Math.min(100, Math.max(0, (progressInSegment / dollarGoal) * 100));
-    
-    dom.widgetRevenueText.textContent = `$${totalEarnings.toFixed(2)} / $${milestoneTarget.toFixed(2)}`;
+    dom.widgetRevenueText.textContent = `$${totalEarnings.toFixed(2)} / $${dollarGoal.toFixed(2)}`;
     dom.widgetRevenueProgress.style.width = `${progressPct.toFixed(1)}%`;
 }
 
@@ -1188,21 +1182,18 @@ function checkAutoIncreaseBids() {
     const dollarGoal = Math.max(1, parseFloat(game.config.autoIncreaseGoal) || 10.0);
     const stepCoins = Math.max(1, parseInt(game.config.autoIncreaseStep) || 250);
     
-    const milestonesHit = Math.floor(totalEarnings / dollarGoal);
-    const lastHit = game.lastMilestonesHit || 0;
-    
-    if (milestonesHit > lastHit) {
-        const stepsToAdd = milestonesHit - lastHit;
-        game.lastMilestonesHit = milestonesHit;
+    // Each completed round triggers at most 1 price step increase if dollar goal was met
+    if (totalEarnings >= dollarGoal && !game.roundAutoIncreased) {
+        game.roundAutoIncreased = true;
         
-        const newMinBid = game.config.minBid + (stepsToAdd * stepCoins);
+        const newMinBid = game.config.minBid + stepCoins;
         game.config.minBid = newMinBid;
         
         if (dom.setMinBid) dom.setMinBid.value = newMinBid;
         
         sendSettingsUpdate();
         
-        addLog(`🚀 REVENUE GOAL HIT ($${(milestonesHit * dollarGoal).toFixed(2)})! Min bid increased by +${stepsToAdd * stepCoins} to 🪙 ${newMinBid} coins!`, 'warning');
+        addLog(`🚀 REVENUE GOAL MET ($${totalEarnings.toFixed(2)})! Min bid increased by +${stepCoins} to 🪙 ${newMinBid} coins for next round!`, 'warning');
     }
 }
 
@@ -1600,7 +1591,7 @@ function resetGame() {
     game.shuffleGridActiveIndex = -1;
     game.snipeTargetChampion = null;
     game.suddenDeathTriggered = false;
-    game.lastMilestonesHit = 0;
+    game.roundAutoIncreased = false;
     
     dom.btnPauseTimer.textContent = "Pause Timer";
     dom.btnPauseTimer.className = "btn btn-secondary";
