@@ -881,6 +881,10 @@ function initOverlayConfig() {
         if (topLeftWidget) {
             topLeftWidget.remove();
         }
+        const bottomLeftWidget = document.getElementById('bottom-left-stats-widget');
+        if (bottomLeftWidget) {
+            bottomLeftWidget.remove();
+        }
     }
 }
 

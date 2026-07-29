@@ -1315,6 +1315,28 @@ body.transparent-bg #top-left-stats-widget {
     pointer-events: none !important;
 }
 
+/* Bottom Left Live Revenue Goal Widget */
+.bottom-left-stats-widget {
+    position: fixed !important;
+    bottom: 25px !important;
+    left: 25px !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    pointer-events: none !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+body.transparent-bg .bottom-left-stats-widget,
+body.transparent-bg #bottom-left-stats-widget {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 .top-stat-card {
     background: rgba(14, 16, 24, 0.88) !important;
     backdrop-filter: blur(16px) !important;
