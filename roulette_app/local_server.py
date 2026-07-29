@@ -128,31 +128,39 @@ async def verify_token_middleware(request: Request, call_next):
 # --- Connection Manager ---
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        # Maps room_id -> List[WebSocket]
+        self.rooms: Dict[str, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket, room_id: str):
         await websocket.accept()
-        self.active_connections.append(websocket)
-        print(f"WS client connected. Total clients: {len(self.active_connections)}")
+        if room_id not in self.rooms:
+            self.rooms[room_id] = []
+        self.rooms[room_id].append(websocket)
+        print(f"WS client connected to room '{room_id}'. Total room clients: {len(self.rooms[room_id])}")
 
-    def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
-            print(f"WS client disconnected. Total clients: {len(self.active_connections)}")
+    def disconnect(self, websocket: WebSocket, room_id: str):
+        if room_id in self.rooms and websocket in self.rooms[room_id]:
+            self.rooms[room_id].remove(websocket)
+            if not self.rooms[room_id]:
+                del self.rooms[room_id]
+            print(f"WS client disconnected from room '{room_id}'.")
 
-    async def broadcast(self, message: Dict[str, Any]):
-        for connection in self.active_connections:
-            try:
-                await connection.send_json(message)
-            except Exception:
-                pass
+    async def broadcast_to_room(self, room_id: str, message: Dict[str, Any]):
+        if room_id in self.rooms:
+            connections = list(self.rooms[room_id])
+            for connection in connections:
+                try:
+                    await connection.send_json(message)
+                except Exception:
+                    pass
 
 manager = ConnectionManager()
 CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
 
-# --- TikTok Client State ---
+# --- Per-Room TikTok Client State ---
 class TikTokState:
-    def __init__(self):
+    def __init__(self, room_id: str):
+        self.room_id: str = room_id
         self.client: Optional[TikTokLiveClient] = None
         self.task: Optional[asyncio.Task] = None
         self.username: Optional[str] = None
@@ -181,9 +189,15 @@ class TikTokState:
         except Exception as e:
             print(f"Error saving Discord config: {e}")
 
-state = TikTokState()
+room_states: Dict[str, TikTokState] = {}
+
+def get_room_state(room_id: str) -> TikTokState:
+    if room_id not in room_states:
+        room_states[room_id] = TikTokState(room_id)
+    return room_states[room_id]
 
 async def send_discord_gift_notification(
+    state: TikTokState,
     username: str, nickname: str, avatar_url: str, gift_name: str,
     coins: int, streak: int, is_simulated: bool = False, ignore_enabled: bool = False
 ):
@@ -222,11 +236,13 @@ async def send_discord_gift_notification(
         print(f"Failed to send Discord notification: {e}")
 
 # --- TikTok Event Handlers ---
-def setup_tiktok_handlers(client: TikTokLiveClient):
+def setup_tiktok_handlers(client: TikTokLiveClient, room_id: str):
+    state = get_room_state(room_id)
+
     @client.on(ConnectEvent)
     async def on_connect(event: ConnectEvent):
         state.status = "connected"
-        await manager.broadcast({
+        await manager.broadcast_to_room(room_id, {
             "type": "status",
             "status": "connected",
             "username": state.username,
@@ -236,7 +252,7 @@ def setup_tiktok_handlers(client: TikTokLiveClient):
     @client.on(DisconnectEvent)
     async def on_disconnect(event: DisconnectEvent):
         state.status = "disconnected"
-        await manager.broadcast({
+        await manager.broadcast_to_room(room_id, {
             "type": "status",
             "status": "disconnected",
             "username": state.username
@@ -245,7 +261,7 @@ def setup_tiktok_handlers(client: TikTokLiveClient):
     @client.on(LiveEndEvent)
     async def on_live_end(event: LiveEndEvent):
         state.status = "disconnected"
-        await manager.broadcast({
+        await manager.broadcast_to_room(room_id, {
             "type": "status",
             "status": "disconnected",
             "username": state.username,
@@ -265,7 +281,7 @@ def setup_tiktok_handlers(client: TikTokLiveClient):
         if not coins:
             coins = 1
             
-        await manager.broadcast({
+        await manager.broadcast_to_room(room_id, {
             "type": "gift",
             "data": {
                 "uniqueId": event.user.unique_id,
@@ -281,6 +297,7 @@ def setup_tiktok_handlers(client: TikTokLiveClient):
         if state.discord_webhook_enabled and state.discord_webhook_url:
             asyncio.create_task(
                 send_discord_gift_notification(
+                    state,
                     username=event.user.unique_id, nickname=event.user.nickname, avatar_url=avatar_url,
                     gift_name=gift_name, coins=coins, streak=event.repeat_count
                 )
@@ -292,7 +309,7 @@ def setup_tiktok_handlers(client: TikTokLiveClient):
         if event.user.avatar_thumb and event.user.avatar_thumb.m_urls:
             avatar_url = event.user.avatar_thumb.m_urls[0]
 
-        await manager.broadcast({
+        await manager.broadcast_to_room(room_id, {
             "type": "chat",
             "data": {
                 "uniqueId": event.user.unique_id,
@@ -302,11 +319,12 @@ def setup_tiktok_handlers(client: TikTokLiveClient):
             }
         })
 
-async def run_tiktok_client(username: str):
+async def run_tiktok_client(username: str, room_id: str):
     clean_username = username.strip().lstrip('@')
+    state = get_room_state(room_id)
     try:
         state.status = "connecting"
-        await manager.broadcast({
+        await manager.broadcast_to_room(room_id, {
             "type": "status",
             "status": "connecting",
             "username": clean_username
@@ -314,32 +332,32 @@ async def run_tiktok_client(username: str):
         
         client = TikTokLiveClient(unique_id=clean_username)
         state.client = client
-        setup_tiktok_handlers(client)
+        setup_tiktok_handlers(client, room_id)
         await client.start()
     except UserOfflineError:
         error_msg = f"User '@{clean_username}' is offline. Make sure they are currently LIVE on TikTok."
         state.status = "disconnected"
-        await manager.broadcast({"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
+        await manager.broadcast_to_room(room_id, {"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
     except UserNotFoundError:
         error_msg = f"User '@{clean_username}' not found. Please double check the username."
         state.status = "disconnected"
-        await manager.broadcast({"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
+        await manager.broadcast_to_room(room_id, {"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
     except (InitialCursorMissingError, WebcastBlocked200Error):
         error_msg = "Connection blocked by TikTok (captcha/IP limit). Try a VPN or wait a few minutes."
         state.status = "disconnected"
-        await manager.broadcast({"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
+        await manager.broadcast_to_room(room_id, {"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
     except SignAPIError:
         error_msg = "TikTok signing API error. Try updating TikTokLive."
         state.status = "disconnected"
-        await manager.broadcast({"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
+        await manager.broadcast_to_room(room_id, {"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
     except AlreadyConnectedError:
         error_msg = "Already connected to this live stream."
         state.status = "disconnected"
-        await manager.broadcast({"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
+        await manager.broadcast_to_room(room_id, {"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
     except Exception as e:
         error_msg = f"Failed to connect: {str(e)}"
         state.status = "disconnected"
-        await manager.broadcast({"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
+        await manager.broadcast_to_room(room_id, {"type": "status", "status": "disconnected", "username": clean_username, "error": error_msg})
 
 # --- Local API Routes ---
 
@@ -551,7 +569,7 @@ async def proxy_avatar(url: str):
 
 # --- WebSocket Connection ---
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
+async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None, room: Optional[str] = None):
     # Verify authentication status
     if not AUTHENTICATED and token != SECRET_TOKEN:
         await websocket.accept()
@@ -559,15 +577,18 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
         await websocket.close(code=1008)
         return
         
-    await manager.connect(websocket)
+    room_id = room.strip() if room and room.strip() else "default"
+    await manager.connect(websocket, room_id)
+    state = get_room_state(room_id)
     
-    # Send current status immediately on connection
+    # Send current status immediately on connection for this room
     await websocket.send_json({
         "type": "status",
         "status": state.status,
         "username": state.username,
         "discord_webhook_url": state.discord_webhook_url,
-        "discord_webhook_enabled": state.discord_webhook_enabled
+        "discord_webhook_enabled": state.discord_webhook_enabled,
+        "room_id": room_id
     })
     
     try:
@@ -584,7 +605,7 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
                         state.task.cancel()
                     
                     state.username = username
-                    state.task = asyncio.create_task(run_tiktok_client(username))
+                    state.task = asyncio.create_task(run_tiktok_client(username, room_id))
                     
             elif cmd_type == "disconnect":
                 if state.client:
@@ -592,7 +613,7 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
                 if state.task and not state.task.done():
                     state.task.cancel()
                 state.status = "disconnected"
-                await manager.broadcast({
+                await manager.broadcast_to_room(room_id, {
                     "type": "status",
                     "status": "disconnected",
                     "username": state.username
@@ -600,7 +621,7 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
                 
             elif cmd_type == "simulate_gift":
                 sim_data = data.get("data", {})
-                await manager.broadcast({
+                await manager.broadcast_to_room(room_id, {
                     "type": "gift",
                     "data": sim_data
                 })
@@ -608,6 +629,7 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
                 if state.discord_webhook_enabled and state.discord_webhook_url:
                     asyncio.create_task(
                         send_discord_gift_notification(
+                            state,
                             username=sim_data.get("uniqueId", "GiftKing"),
                             nickname=sim_data.get("nickname", "GiftKing"),
                             avatar_url=sim_data.get("avatar", ""),
@@ -623,7 +645,7 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
                 state.discord_webhook_url = config_data.get("url")
                 state.discord_webhook_enabled = bool(config_data.get("enabled", False))
                 state.save_config()
-                await manager.broadcast({
+                await manager.broadcast_to_room(room_id, {
                     "type": "discord_config_update",
                     "data": {
                         "url": state.discord_webhook_url,
@@ -635,6 +657,7 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
                 if state.discord_webhook_url:
                     asyncio.create_task(
                         send_discord_gift_notification(
+                            state,
                             username="TikTokLiveRoulette",
                             nickname="Roulette Bot",
                             avatar_url="https://github.com/fluentpython.png",
@@ -648,13 +671,13 @@ async def websocket_endpoint(websocket: WebSocket, token: Optional[str] = None):
                 
             elif cmd_type == "simulate_chat":
                 sim_data = data.get("data", {})
-                await manager.broadcast({
+                await manager.broadcast_to_room(room_id, {
                     "type": "chat",
                     "data": sim_data
                 })
                 
             elif cmd_type in ["settings_update", "reset_game", "toggle_pause", "trigger_spin", "dismiss_announcement"]:
-                await manager.broadcast(data)
+                await manager.broadcast_to_room(room_id, data)
                 
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        manager.disconnect(websocket, room_id)

@@ -428,6 +428,7 @@
                 }
 
                 if (response.ok && data.success) {
+                    localStorage.setItem("roulette_license_key", key);
                     showMessage(data.message || "Key activated! Loading application...", "success");
                     setTimeout(() => {
                         window.location.href = token ? `/?token=${token}` : `/`;

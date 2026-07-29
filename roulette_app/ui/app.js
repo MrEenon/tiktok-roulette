@@ -838,6 +838,28 @@ function applySettingsUpdate(data) {
     recalculateCoinsAndPlayers();
 }
 
+function getRoomId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let roomParam = urlParams.get('room');
+    if (roomParam && roomParam.trim()) {
+        return roomParam.trim();
+    }
+    
+    // Check if a saved key exists in localStorage
+    const savedKey = localStorage.getItem('roulette_license_key');
+    if (savedKey && savedKey.trim()) {
+        return 'room_' + savedKey.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+    }
+    
+    // Fallback: generate a persistent session room ID
+    let persistentRoom = localStorage.getItem('roulette_room_id');
+    if (!persistentRoom) {
+        persistentRoom = 'room_' + Math.random().toString(36).substring(2, 9);
+        localStorage.setItem('roulette_room_id', persistentRoom);
+    }
+    return persistentRoom;
+}
+
 function initOverlayConfig() {
     // Construct the overlay URL
     let cleanOrigin = window.location.origin;
@@ -847,7 +869,8 @@ function initOverlayConfig() {
     }
     const currentToken = new URLSearchParams(window.location.search).get('token');
     const tokenQuery = currentToken ? `token=${currentToken}&` : '';
-    const overlayLink = `${cleanOrigin}/?${tokenQuery}overlay=true`;
+    const roomId = getRoomId();
+    const overlayLink = `${cleanOrigin}/?${tokenQuery}overlay=true&room=${encodeURIComponent(roomId)}`;
     
     if (dom.overlayUrl) {
         dom.overlayUrl.value = overlayLink;
@@ -890,13 +913,14 @@ function initOverlayConfig() {
 
 // --- 5. WebSocket Connection & Event Routing ---
 function connectWebSocket() {
+    const roomId = getRoomId();
     let wsUrl;
     if (window.location.protocol === 'file:') {
         // If opened as a local file, connect to local server on port 8001
-        wsUrl = `ws://127.0.0.1:8001/ws?token=${token}`;
+        wsUrl = `ws://127.0.0.1:8001/ws?token=${token}&room=${encodeURIComponent(roomId)}`;
     } else {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        wsUrl = `${protocol}//${window.location.host}/ws?token=${token}`;
+        wsUrl = `${protocol}//${window.location.host}/ws?token=${token}&room=${encodeURIComponent(roomId)}`;
     }
     
     console.log(`Connecting to WebSocket at: ${wsUrl}`);
