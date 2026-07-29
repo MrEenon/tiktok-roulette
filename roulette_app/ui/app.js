@@ -1087,6 +1087,10 @@ function registerPlayerBid(uniqueId, nickname, avatarUrl, coins, giftName) {
     // Accumulate the newly received coins
     player.accumulatedCoins = (player.accumulatedCoins || 0) + coins;
 
+    // Immediately track cumulative total coins gifted for this round
+    game.totalCoinsEarnedThisRound = (game.totalCoinsEarnedThisRound || 0) + coins;
+    updateRevenueGoalWidget();
+
     // Check if we can add entries based on the updated accumulated coins
     const entriesToAdd = Math.floor(player.accumulatedCoins / game.config.minBid);
     if (entriesToAdd <= 0) {
@@ -1404,6 +1408,9 @@ function triggerSpin(winnerIdx) {
 
 function resolveSpinResult(winningEntryIndex) {
     game.state = 'result';
+    
+    // Evaluate if revenue goal milestone was hit and increase min bid for subsequent bids/rounds post-spin
+    checkAutoIncreaseBids();
     
     const winningEntry = game.entries[winningEntryIndex];
     if (!winningEntry) {
