@@ -233,6 +233,7 @@ const game = {
         autoIncreaseStep: 250
     },
     roundAutoIncreased: false,
+    auctionStarted: false,
     // Engine states
     state: 'idle', // 'idle', 'countdown', 'spinning', 'result'
     timer: 30,
@@ -560,17 +561,13 @@ function setupEventHandlers() {
         }
     });
     
-    // ▶️ START ROUND button (Starts the round countdown timer)
+    // ▶️ START ROUND button (Starts the auction & countdown timer)
     if (dom.btnStartRound) {
         dom.btnStartRound.addEventListener('click', () => {
-            const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
-            if (uniquePlayerIds.size < 2) {
-                alert("Need at least 2 players to start the round!");
-                return;
-            }
             if (game.state === 'spinning') return;
+            game.auctionStarted = true;
             startCountdown();
-            addLog("▶️ Round started manually by streamer!", "info");
+            addLog("▶️ AUCTION STARTED! Bids and entries are now active!", "info");
         });
     }
 
@@ -583,6 +580,7 @@ function setupEventHandlers() {
                 return;
             }
             if (game.state === 'spinning') return;
+            game.auctionStarted = true;
 
             const winnerIdx = determineWinnerIndex();
             if (game.ws && game.ws.readyState === WebSocket.OPEN) {
@@ -1112,6 +1110,11 @@ function handleServerMessage(msg) {
 // --- 6. Core Game Logic (Timer, Bids, Spin, Win) ---
 
 function registerPlayerBid(uniqueId, nickname, avatarUrl, coins, giftName) {
+    if (!game.auctionStarted) {
+        addLog(`⚠️ Entry ignored from ${nickname} (@${uniqueId}) — AUCTION NOT STARTED. Streamer must click 'START ROUND'.`, 'warning');
+        return;
+    }
+
     if (game.config.entriesLocked) {
         addLog(`🔒 Entry ignored from ${nickname} (@${uniqueId}) - ENTRIES ARE LOCKED.`, 'warning');
         return;
@@ -1421,7 +1424,12 @@ function startCountdown(duration) {
 
 function updateTimerDisplay() {
     let formattedTimer = "";
-    if (game.state === 'snipe_countdown' || game.state === 'paused_snipe') {
+    if (game.config.manualStart && !game.auctionStarted && game.state === 'idle') {
+        dom.timerDisplay.classList.remove('snipe-warning');
+        dom.timerDisplay.classList.remove('sudden-death-warning');
+        formattedTimer = "PRESS START";
+        dom.timerDisplay.textContent = "PRESS START";
+    } else if (game.state === 'snipe_countdown' || game.state === 'paused_snipe') {
         dom.timerDisplay.classList.add('snipe-warning');
         dom.timerDisplay.classList.remove('sudden-death-warning');
         formattedTimer = `SNIPE: ${game.timer}s`;
@@ -1710,6 +1718,7 @@ function resetGame() {
     game.entries = [];
     game.totalCoins = 0;
     game.state = 'idle';
+    game.auctionStarted = false;
     game.timer = game.config.roundTime;
     game.wheel.angle = 0;
     game.wheel.spinVelocity = 0;
