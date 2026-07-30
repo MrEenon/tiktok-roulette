@@ -1636,19 +1636,15 @@ function resolveSpinResult(winningEntryIndex) {
                 game.suddenDeathTriggered = true;
                 triggerSuddenDeath();
             } else if (remainingUniquePlayers.size > 1) {
-                // Check if manual start is required before resuming countdown
-                if (!game.config.manualStart) {
-                    startCountdown();
-                } else {
-                    game.state = 'idle';
-                    updateStartButtonState(remainingUniquePlayers.size);
-                    addLog(`⏸️ Wheel ready for next spin. Click 'START SPINNER' when ready!`, 'info');
-                }
+                // Resume countdown timer for remaining players on the wheel
+                startCountdown();
+                addLog(`⏱️ Timer restarted for next round!`, 'info');
             } else {
                 // No entries left
                 resetGame();
+                startCountdown();
             }
-        }, 1000);
+        }, 1200);
         
     } else {
         // Winner Mode - round completed!
@@ -1670,7 +1666,13 @@ function resolveSpinResult(winningEntryIndex) {
         dom.announcementBanner.classList.remove('hidden');
         addLog(`🏆 WINNER: ${winnerPlayer.nickname} (@${winnerPlayer.uniqueId})`, 'info');
         
-        // Winner remains on screen until dismissed by streamer
+        // Auto-dismiss winner banner after 4.5s and restart round timer
+        setTimeout(() => {
+            dom.announcementBanner.classList.add('hidden');
+            confetti.stop();
+            resetGame();
+            startCountdown();
+        }, 4500);
     }
 }
 
@@ -1925,6 +1927,7 @@ function gameLoop() {
         
         // Stop spinning when duration completes
         if (t === 1) {
+            game.state = 'result';
             resolveSpinResult(game.wheel.winningEntryIdx);
         }
     }
