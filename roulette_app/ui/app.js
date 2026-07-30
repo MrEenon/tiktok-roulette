@@ -312,6 +312,8 @@ const dom = {
     startWheelContainer: document.getElementById('start-wheel-container'),
     setManualStart: document.getElementById('set-manual-start'),
     btnPauseTimer: document.getElementById('btn-pause-timer'),
+    btnAdd30s: document.getElementById('btn-add-30s'),
+    btnAdd60s: document.getElementById('btn-add-60s'),
     overlayUrl: document.getElementById('overlay-url'),
     btnCopyUrl: document.getElementById('btn-copy-url'),
     simUsername: document.getElementById('sim-username'),
@@ -596,6 +598,29 @@ function setupEventHandlers() {
                 triggerSpin(winnerIdx);
             }
         });
+    }
+
+    const addTimerSeconds = (seconds) => {
+        game.timer = (game.timer || 0) + seconds;
+        updateTimerDisplay();
+        const mins = Math.floor(game.timer / 60);
+        const secs = game.timer % 60;
+        const timeFormatted = `${mins}:${secs.toString().padStart(2, '0')}`;
+        addLog(`⏱️ Added +${seconds}s to timer! Current time: ${timeFormatted}`, 'info');
+        
+        if (game.ws && game.ws.readyState === WebSocket.OPEN) {
+            game.ws.send(JSON.stringify({
+                type: "add_timer",
+                data: { seconds: seconds }
+            }));
+        }
+    };
+
+    if (dom.btnAdd30s) {
+        dom.btnAdd30s.addEventListener('click', () => addTimerSeconds(30));
+    }
+    if (dom.btnAdd60s) {
+        dom.btnAdd60s.addEventListener('click', () => addTimerSeconds(60));
     }
 
     if (dom.setManualStart) {
@@ -1105,6 +1130,12 @@ function handleServerMessage(msg) {
     }
     else if (msg.type === "dismiss_announcement") {
         dismissAnnouncement();
+    }
+    else if (msg.type === "add_timer") {
+        if (msg.data && msg.data.seconds) {
+            game.timer = (game.timer || 0) + msg.data.seconds;
+            updateTimerDisplay();
+        }
     }
     else if (msg.type === "discord_config_update") {
         const configData = msg.data;
