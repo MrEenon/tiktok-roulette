@@ -383,10 +383,13 @@ async def verify_license_endpoint(data: Dict[str, Any], request: Request):
         
         db = SessionLocal()
         try:
-            # Generate unique client HWID combining IP and user-agent header
-            user_agent = request.headers.get("user-agent", "web")
-            ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "127.0.0.1")
-            client_hwid = f"{ip}-{user_agent}"
+            # Extract persistent device HWID sent by browser, or fallback to clean client IP + User-Agent
+            client_hwid = data.get("device_hwid") or data.get("hwid")
+            if not client_hwid:
+                user_agent = request.headers.get("user-agent", "web")
+                raw_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "127.0.0.1")
+                clean_ip = raw_ip.split(",")[0].strip()
+                client_hwid = f"{clean_ip}-{user_agent}"
             
             req = VerifyKeyRequest(key=key, hwid=client_hwid)
             result = await verify_license(req, db)

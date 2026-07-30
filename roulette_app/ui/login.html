@@ -914,12 +914,22 @@
             }
         }
 
+        function getDeviceHwid() {
+            let hwid = localStorage.getItem("eenon_device_hwid");
+            if (!hwid) {
+                hwid = "device_" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                localStorage.setItem("eenon_device_hwid", hwid);
+            }
+            return hwid;
+        }
+
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             const key = keyInput.value.trim();
             if (!key) return;
 
             const saveKey = document.getElementById("save-key").checked;
+            const deviceHwid = getDeviceHwid();
 
             submitBtn.disabled = true;
             showMessage("Verifying key and registering hardware ID...", "loading");
@@ -931,7 +941,7 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ key: key, save_key: saveKey })
+                    body: JSON.stringify({ key: key, save_key: saveKey, device_hwid: deviceHwid })
                 });
 
                 let data = {};

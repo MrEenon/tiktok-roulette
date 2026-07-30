@@ -156,6 +156,11 @@ async def verify_license(req: VerifyKeyRequest, db: Session = Depends(get_db)):
         }
         
     # HWID Locking logic
+    # Clean up legacy proxy IP artifacts or outdated server HWIDs if present
+    if key_record.hwid and ("," in key_record.hwid or key_record.hwid == "web-server-hwid" or (req.hwid.startswith("device_") and not key_record.hwid.startswith("device_"))):
+        # Auto-upgrade to persistent device HWID
+        key_record.hwid = req.hwid
+
     if not key_record.hwid:
         # First time login - lock HWID
         key_record.hwid = req.hwid
