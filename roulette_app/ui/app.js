@@ -305,6 +305,7 @@ const dom = {
     setJoinKeyword: document.getElementById('set-join-keyword'),
     btnResetGame: document.getElementById('btn-reset-game'),
     btnSpinNow: document.getElementById('btn-spin-now'),
+    btnStartRound: document.getElementById('btn-start-round'),
     btnStartWheel: document.getElementById('btn-start-wheel'),
     btnStartWheelText: document.getElementById('btn-start-wheel-text'),
     startWheelContainer: document.getElementById('start-wheel-container'),
@@ -559,30 +560,40 @@ function setupEventHandlers() {
         }
     });
     
-    const handleStartSpin = () => {
-        const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
-        if (uniquePlayerIds.size < 2) {
-            alert("Need at least 2 players to spin the wheel!");
-            return;
-        }
-        if (game.state === 'spinning') return;
-
-        const winnerIdx = determineWinnerIndex();
-        if (game.ws && game.ws.readyState === WebSocket.OPEN) {
-            game.ws.send(JSON.stringify({
-                type: "trigger_spin",
-                data: { winnerIndex: winnerIdx }
-            }));
-        } else {
-            triggerSpin(winnerIdx);
-        }
-    };
-
-    if (dom.btnSpinNow) {
-        dom.btnSpinNow.addEventListener('click', handleStartSpin);
+    // ▶️ START ROUND button (Starts the round countdown timer)
+    if (dom.btnStartRound) {
+        dom.btnStartRound.addEventListener('click', () => {
+            const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
+            if (uniquePlayerIds.size < 2) {
+                alert("Need at least 2 players to start the round!");
+                return;
+            }
+            if (game.state === 'spinning') return;
+            startCountdown();
+            addLog("▶️ Round started manually by streamer!", "info");
+        });
     }
-    if (dom.btnStartWheel) {
-        dom.btnStartWheel.addEventListener('click', handleStartSpin);
+
+    // 🎲 FORCE SPIN button (Immediately spins the wheel)
+    if (dom.btnSpinNow) {
+        dom.btnSpinNow.addEventListener('click', () => {
+            const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
+            if (uniquePlayerIds.size < 2) {
+                alert("Need at least 2 players to spin the wheel!");
+                return;
+            }
+            if (game.state === 'spinning') return;
+
+            const winnerIdx = determineWinnerIndex();
+            if (game.ws && game.ws.readyState === WebSocket.OPEN) {
+                game.ws.send(JSON.stringify({
+                    type: "trigger_spin",
+                    data: { winnerIndex: winnerIdx }
+                }));
+            } else {
+                triggerSpin(winnerIdx);
+            }
+        });
     }
 
     if (dom.setManualStart) {
