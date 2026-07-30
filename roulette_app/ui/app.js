@@ -1000,6 +1000,7 @@ function handleServerMessage(msg) {
     } 
     else if (msg.type === "gift") {
         const giftData = msg.data;
+        const giftCoins = Math.max(1, parseInt(giftData.coins) || 1);
         
         // Calculate the difference in streak to support spammed/streaked gifts in real-time
         let streakKey = `${giftData.uniqueId}_${giftData.giftName}`;
@@ -1008,26 +1009,28 @@ function handleServerMessage(msg) {
         
         let multiplier = 1;
         
-        if (giftData.streak) {
-            if (currentStreak === 1 || !lastStreak || currentStreak < lastStreak.count || (Date.now() - lastStreak.time > 8000)) {
-                // New streak started or single gift
+        if (giftData.streak && giftData.streak > 1) {
+            if (!lastStreak || currentStreak <= lastStreak.count || (Date.now() - lastStreak.time > 8000)) {
+                // New streak started or reset
                 multiplier = currentStreak;
             } else {
                 // Continuation of existing streak
                 multiplier = currentStreak - lastStreak.count;
             }
+            if (multiplier < 1) multiplier = 1;
+            
             // Update active streak record
             game.activeStreaks[streakKey] = {
                 count: currentStreak,
                 time: Date.now()
             };
+        } else {
+            multiplier = 1;
         }
         
-        if (multiplier > 0) {
-            const totalCoins = giftData.coins * multiplier;
-            addLog(`${giftData.nickname} sent ${giftData.giftName} (🪙 ${giftData.coins}) x${multiplier} [Total: 🪙 ${totalCoins}]`, 'gift');
-            registerPlayerBid(giftData.uniqueId, giftData.nickname, giftData.avatar, totalCoins, giftData.giftName);
-        }
+        const totalCoins = giftCoins * multiplier;
+        addLog(`🎁 ${giftData.nickname} sent ${giftData.giftName} (🪙 ${giftCoins}) x${multiplier} [Total: 🪙 ${totalCoins}]`, 'gift');
+        registerPlayerBid(giftData.uniqueId, giftData.nickname, giftData.avatar, totalCoins, giftData.giftName);
     }
     else if (msg.type === "chat") {
         const chatData = msg.data;

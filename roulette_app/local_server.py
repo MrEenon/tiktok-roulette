@@ -270,54 +270,84 @@ def setup_tiktok_handlers(client: TikTokLiveClient, room_id: str):
 
     @client.on(GiftEvent)
     async def on_gift(event: GiftEvent):
-        avatar_url = ""
-        if event.user.avatar_thumb and event.user.avatar_thumb.m_urls:
-            avatar_url = event.user.avatar_thumb.m_urls[0]
-            
-        gift_name = getattr(event.gift, 'name', 'Gift')
-        coins = getattr(event.gift, 'diamond_count', 0)
-        if not coins and getattr(event.gift, 'info', None):
-            coins = getattr(event.gift.info, 'coin_count', 0)
-        if not coins:
-            coins = 1
-            
-        await manager.broadcast_to_room(room_id, {
-            "type": "gift",
-            "data": {
-                "uniqueId": event.user.unique_id,
-                "nickname": event.user.nickname,
-                "avatar": avatar_url,
-                "giftName": gift_name,
-                "coins": coins,
-                "streak": event.repeat_count,
-                "repeatCount": event.repeat_count
-            }
-        })
+        try:
+            avatar_url = ""
+            if hasattr(event, 'user') and event.user:
+                avatar_thumb = getattr(event.user, 'avatar_thumb', None)
+                if avatar_thumb and getattr(avatar_thumb, 'm_urls', None):
+                    avatar_url = avatar_thumb.m_urls[0]
 
-        if state.discord_webhook_enabled and state.discord_webhook_url:
-            asyncio.create_task(
-                send_discord_gift_notification(
-                    state,
-                    username=event.user.unique_id, nickname=event.user.nickname, avatar_url=avatar_url,
-                    gift_name=gift_name, coins=coins, streak=event.repeat_count
+            unique_id = getattr(event.user, 'unique_id', 'unknown_user') if hasattr(event, 'user') and event.user else 'unknown_user'
+            nickname = getattr(event.user, 'nickname', unique_id) if hasattr(event, 'user') and event.user else unique_id
+
+            gift = getattr(event, 'gift', None)
+            gift_name = getattr(gift, 'name', 'Gift') if gift else 'Gift'
+
+            # Determine accurate coin value from gift properties
+            coins = 0
+            if gift:
+                coins = getattr(gift, 'coins', 0) or getattr(gift, 'cost', 0)
+                if not coins and hasattr(gift, 'diamond_count') and getattr(gift, 'diamond_count', 0) > 0:
+                    coins = getattr(gift, 'diamond_count', 0) * 2
+                if not coins and hasattr(gift, 'info') and gift.info:
+                    coins = getattr(gift.info, 'coin_count', 0)
+            if not coins or coins <= 0:
+                coins = 1
+
+            repeat_count = getattr(event, 'repeat_count', 1) or 1
+
+            print(f"[TikTokLive Gift Event] Room: '{room_id}' | @{unique_id} ({nickname}) sent {gift_name} (🪙 {coins}) x{repeat_count}")
+
+            await manager.broadcast_to_room(room_id, {
+                "type": "gift",
+                "data": {
+                    "uniqueId": unique_id,
+                    "nickname": nickname,
+                    "avatar": avatar_url,
+                    "giftName": gift_name,
+                    "coins": coins,
+                    "streak": repeat_count,
+                    "repeatCount": repeat_count
+                }
+            })
+
+            if state.discord_webhook_enabled and state.discord_webhook_url:
+                asyncio.create_task(
+                    send_discord_gift_notification(
+                        state,
+                        username=unique_id, nickname=nickname, avatar_url=avatar_url,
+                        gift_name=gift_name, coins=coins, streak=repeat_count
+                    )
                 )
-            )
+        except Exception as err:
+            print(f"Error processing TikTok GiftEvent for room '{room_id}': {err}")
 
     @client.on(CommentEvent)
     async def on_comment(event: CommentEvent):
-        avatar_url = ""
-        if event.user.avatar_thumb and event.user.avatar_thumb.m_urls:
-            avatar_url = event.user.avatar_thumb.m_urls[0]
+        try:
+            avatar_url = ""
+            if hasattr(event, 'user') and event.user:
+                avatar_thumb = getattr(event.user, 'avatar_thumb', None)
+                if avatar_thumb and getattr(avatar_thumb, 'm_urls', None):
+                    avatar_url = avatar_thumb.m_urls[0]
 
-        await manager.broadcast_to_room(room_id, {
-            "type": "chat",
-            "data": {
-                "uniqueId": event.user.unique_id,
-                "nickname": event.user.nickname,
-                "avatar": avatar_url,
-                "comment": event.comment
-            }
-        })
+            unique_id = getattr(event.user, 'unique_id', 'unknown_user') if hasattr(event, 'user') and event.user else 'unknown_user'
+            nickname = getattr(event.user, 'nickname', unique_id) if hasattr(event, 'user') and event.user else unique_id
+            comment = getattr(event, 'comment', '')
+
+            print(f"[TikTokLive Comment] Room: '{room_id}' | @{unique_id}: {comment}")
+
+            await manager.broadcast_to_room(room_id, {
+                "type": "chat",
+                "data": {
+                    "uniqueId": unique_id,
+                    "nickname": nickname,
+                    "avatar": avatar_url,
+                    "comment": comment
+                }
+            })
+        except Exception as err:
+            print(f"Error processing TikTok CommentEvent for room '{room_id}': {err}")
 
 async def run_tiktok_client(username: str, room_id: str):
     clean_username = username.strip().lstrip('@')
