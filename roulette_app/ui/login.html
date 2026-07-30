@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EENON License Verification - TikTok Live Roulette Wheel</title>
+    <title>EENON STREAM AUCTION SUITE - App Launcher</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #05060a;
-            --card-bg: rgba(18, 20, 32, 0.75);
-            --border-color: rgba(191, 149, 63, 0.35);
+            --card-bg: rgba(18, 20, 32, 0.82);
+            --border-color: rgba(191, 149, 63, 0.4);
             --gold-primary: #bf953f;
             --gold-light: #fcf6ba;
             --gold-dark: #b38728;
             --gold-grad: linear-gradient(135deg, #bf953f 0%, #fcf6ba 50%, #b38728 100%);
+            --cyan-accent: #00f2fe;
+            --purple-accent: #a855f7;
             --text-color: #f3f4f6;
             --text-muted: #9ca3af;
             --error-color: #ef4444;
@@ -36,8 +38,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
+            padding: 30px 20px;
         }
 
         #galaxy-canvas {
@@ -50,6 +53,7 @@
             pointer-events: none;
         }
 
+        /* --- LOGIN CARD VIEW --- */
         .login-container {
             position: relative;
             z-index: 10;
@@ -66,7 +70,7 @@
             border-radius: 24px;
             padding: 40px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7),
-                        0 0 60px rgba(191, 149, 63, 0.15);
+                        0 0 60px rgba(191, 149, 63, 0.2);
             text-align: center;
             animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -95,13 +99,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 25px rgba(191, 149, 63, 0.4);
+            box-shadow: 0 0 30px rgba(191, 149, 63, 0.5);
             animation: pulseGlow 3s infinite ease-in-out;
         }
 
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 20px rgba(191, 149, 63, 0.3); }
-            50% { box-shadow: 0 0 35px rgba(252, 246, 186, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(252, 246, 186, 0.7); }
         }
 
         .logo-icon {
@@ -114,17 +118,16 @@
             font-size: 26px;
             font-weight: 800;
             letter-spacing: 1px;
-            margin-bottom: 8px;
             background: var(--gold-grad);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
+            margin-bottom: 8px;
         }
 
         .subtitle {
+            font-size: 13.5px;
             color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 30px;
+            font-weight: 400;
         }
 
         .form-group {
@@ -135,10 +138,10 @@
         label {
             display: block;
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-weight: 700;
             color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 8px;
         }
 
@@ -148,53 +151,43 @@
 
         input[type="text"] {
             width: 100%;
-            background: rgba(10, 10, 18, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(10, 12, 20, 0.6);
+            border: 1px solid rgba(191, 149, 63, 0.3);
             border-radius: 12px;
-            padding: 15px 18px;
-            font-family: inherit;
-            color: #fff;
+            padding: 14px 16px;
+            color: #ffffff;
             font-size: 15px;
+            font-family: monospace;
             letter-spacing: 1px;
             transition: all 0.3s ease;
+            outline: none;
         }
 
         input[type="text"]:focus {
-            outline: none;
-            border-color: var(--gold-primary);
+            border-color: var(--gold-light);
             box-shadow: 0 0 15px rgba(191, 149, 63, 0.3);
-        }
-
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 1px;
+            background: rgba(10, 12, 20, 0.8);
         }
 
         .btn-submit {
             width: 100%;
             background: var(--gold-grad);
+            color: #0b0c10;
             border: none;
             border-radius: 12px;
             padding: 16px;
-            color: #0b0c10;
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
-            cursor: pointer;
             letter-spacing: 1px;
+            cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(191, 149, 63, 0.3);
+            box-shadow: 0 0 20px rgba(191, 149, 63, 0.4);
             margin-top: 10px;
         }
 
-        .btn-submit:hover:not(:disabled) {
+        .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(191, 149, 63, 0.5);
-            filter: brightness(1.1);
-        }
-
-        .btn-submit:active:not(:disabled) {
-            transform: translateY(0);
+            box-shadow: 0 0 30px rgba(252, 246, 186, 0.6);
         }
 
         .btn-submit:disabled {
@@ -248,11 +241,249 @@
             to { transform: rotate(360deg); }
         }
 
-        .footer-text {
-            margin-top: 30px;
+        /* --- APP LAUNCHER SUITE HUB VIEW --- */
+        .hub-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hub-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hub-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 34px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #fcf6ba 50%, #bf953f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 35px rgba(191, 149, 63, 0.3);
+        }
+
+        .hub-subtitle {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .license-status-bar {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(18, 20, 32, 0.85);
+            border: 1px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-top: 18px;
+            box-shadow: 0 0 25px rgba(191, 149, 63, 0.2);
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulseGlowDot 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlowDot {
+            0%, 100% { opacity: 0.6; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .license-key-display {
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--gold-light);
+            font-size: 13.5px;
+            letter-spacing: 1px;
+        }
+
+        .btn-switch-key {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #d1d5db;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-switch-key:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        /* Grid Layout */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 28px;
+        }
+
+        .app-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(191, 149, 63, 0.35);
+            border-radius: 24px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        }
+
+        .app-card.active {
+            border-color: rgba(191, 149, 63, 0.7);
+        }
+
+        .app-card.active:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--gold-light);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8),
+                        0 0 45px rgba(252, 246, 186, 0.35);
+        }
+
+        .app-card.locked {
+            opacity: 0.65;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .app-badge {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            padding: 5px 12px;
+            border-radius: 14px;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .badge-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
+        }
+
+        .badge-locked {
+            background: rgba(255, 255, 255, 0.08);
+            color: #9ca3af;
+            border: 1px solid rgba(156, 163, 175, 0.25);
+        }
+
+        .app-icon-wrapper {
+            width: 65px;
+            height: 65px;
+            border-radius: 18px;
+            background: var(--gold-grad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 22px;
+            box-shadow: 0 0 25px rgba(191, 149, 63, 0.4);
+        }
+
+        .app-card.locked .app-icon-wrapper {
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: none;
+            color: #6b7280;
+        }
+
+        .app-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .app-desc {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 22px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 28px;
+            font-size: 13px;
+            color: #e5e7eb;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .feature-icon {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .btn-launch {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            background: var(--gold-grad);
+            color: #0b0c10;
+            font-weight: 900;
+            font-size: 14.5px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(191, 149, 63, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-launch:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 35px rgba(252, 246, 186, 0.7);
+        }
+
+        .btn-locked {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #6b7280;
+            font-weight: 700;
+            font-size: 13.5px;
+            cursor: not-allowed;
+        }
+
+        .footer-text {
+            margin-top: 35px;
+            font-size: 11.5px;
             color: rgba(255, 255, 255, 0.35);
             letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -260,14 +491,15 @@
 
     <canvas id="galaxy-canvas"></canvas>
 
-    <div class="login-container">
+    <!-- VIEW 1: LICENSE KEY VERIFICATION -->
+    <div id="login-view" class="login-container">
         <div class="card">
             <div class="logo-area">
                 <div class="logo-circle">
                     <span class="logo-icon">🔑</span>
                 </div>
                 <h1>EENON LICENSE</h1>
-                <p class="subtitle">Provide a valid key to access the application</p>
+                <p class="subtitle">Enter your key to unlock the Stream Auction Suite</p>
             </div>
 
             <form id="login-form">
@@ -283,14 +515,96 @@
                     <label for="save-key" style="margin-bottom: 0; cursor: pointer; text-transform: none; font-size: 13.5px; color: var(--text-color); font-weight: normal; letter-spacing: normal;">Remember key on this device</label>
                 </div>
 
-                <button type="submit" id="submit-btn" class="btn-submit">ACTIVATE LICENSE</button>
+                <button type="submit" id="submit-btn" class="btn-submit">ACTIVATE & CONTINUE</button>
             </form>
 
             <div id="message" class="message-box"></div>
 
             <div class="footer-text">
-                EENON'S MONEY MAKER WHEEL @2026
+                EENON'S MONEY MAKER SUITE @2026
             </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: FUTURISTIC APP LAUNCHER SUITE HUB -->
+    <div id="app-hub-view" class="hub-container hidden">
+        <div class="hub-header">
+            <h1 class="hub-title">EENON STREAM AUCTION SUITE</h1>
+            <p class="hub-subtitle">Select an interactive live stream auction application to launch</p>
+            
+            <div class="license-status-bar">
+                <span class="status-dot"></span>
+                <span>LICENSE VERIFIED:</span>
+                <span id="active-key-display" class="license-key-display">EENON-XXXXXX</span>
+                <button id="btn-switch-key" class="btn-switch-key">Switch Key</button>
+            </div>
+        </div>
+
+        <div class="app-grid">
+            <!-- APP CARD 1: TIKTOK LIVE ROULETTE WHEEL -->
+            <div class="app-card active">
+                <span class="app-badge badge-active">● ACTIVE & READY</span>
+                <div>
+                    <div class="app-icon-wrapper">
+                        <span>🎡</span>
+                    </div>
+                    <h2 class="app-name">TikTok Live Roulette Wheel</h2>
+                    <p class="app-desc">Interactive live auction wheel driven by real-time TikTok gifts, auto-escalating bids, and eliminations.</p>
+                    
+                    <ul class="feature-list">
+                        <li><span class="feature-icon">✓</span> Real-Time Gift & Chat Integration</li>
+                        <li><span class="feature-icon">✓</span> Auto Increase Bids & Revenue Goal</li>
+                        <li><span class="feature-icon">✓</span> Sudden Death & Snipe Delay Duels</li>
+                        <li><span class="feature-icon">✓</span> Clean OBS Studio Overlay Link</li>
+                    </ul>
+                </div>
+                
+                <button id="btn-launch-roulette" class="btn-launch">🚀 LAUNCH ROULETTE WHEEL</button>
+            </div>
+
+            <!-- APP CARD 2: PLINKO BIDDING DUEL (COMING SOON) -->
+            <div class="app-card locked">
+                <span class="app-badge badge-locked">🔒 COMING SOON</span>
+                <div>
+                    <div class="app-icon-wrapper">
+                        <span>🎯</span>
+                    </div>
+                    <h2 class="app-name">Plinko Bidding Duel</h2>
+                    <p class="app-desc">Drop coins down the physical pegboard to win auction bid multipliers and jackpot prizes live on stream.</p>
+                    
+                    <ul class="feature-list">
+                        <li><span class="feature-icon">🔒</span> Dynamic Physics Pegboard</li>
+                        <li><span class="feature-icon">🔒</span> Live Gift Multipliers</li>
+                        <li><span class="feature-icon">🔒</span> Custom Sound Effects & FX</li>
+                    </ul>
+                </div>
+                
+                <button class="btn-locked" disabled>🔒 IN DEVELOPMENT</button>
+            </div>
+
+            <!-- APP CARD 3: MYSTERY BOX AUCTIONS (COMING SOON) -->
+            <div class="app-card locked">
+                <span class="app-badge badge-locked">🔒 COMING SOON</span>
+                <div>
+                    <div class="app-icon-wrapper">
+                        <span>📦</span>
+                    </div>
+                    <h2 class="app-name">Mystery Box Auctions</h2>
+                    <p class="app-desc">Live audience mystery gift unboxing auctions where top gifters claim hidden prize boxes on stream.</p>
+                    
+                    <ul class="feature-list">
+                        <li><span class="feature-icon">🔒</span> 3D Interactive Unboxing</li>
+                        <li><span class="feature-icon">🔒</span> Audience Blind Bidding</li>
+                        <li><span class="feature-icon">🔒</span> Instant Streamer Winner Alerts</li>
+                    </ul>
+                </div>
+                
+                <button class="btn-locked" disabled>🔒 IN DEVELOPMENT</button>
+            </div>
+        </div>
+
+        <div class="footer-text">
+            EENON'S STREAM AUCTION SUITE @2026 — POWERING LIVE STREAM MONETIZATION
         </div>
     </div>
 
@@ -299,7 +613,7 @@
         (function() {
             const canvas = document.getElementById('galaxy-canvas');
             const ctx = canvas.getContext('2d');
-            let width, height, stars = [], nebulae = [], shootingStars = [];
+            let width, height, stars = [], nebulae = [];
 
             function initGalaxy() {
                 width = canvas.width = window.innerWidth;
@@ -321,9 +635,9 @@
                 }
 
                 nebulae = [
-                    { x: width * 0.25, y: height * 0.35, r: 400, color: 'rgba(147, 51, 234, 0.18)', vx: 0.12, vy: 0.06 },
-                    { x: width * 0.75, y: height * 0.65, r: 450, color: 'rgba(191, 149, 63, 0.15)', vx: -0.09, vy: 0.09 },
-                    { x: width * 0.5, y: height * 0.2, r: 350, color: 'rgba(59, 130, 246, 0.15)', vx: 0.07, vy: -0.07 }
+                    { x: width * 0.25, y: height * 0.35, r: 420, color: 'rgba(147, 51, 234, 0.18)', vx: 0.12, vy: 0.06 },
+                    { x: width * 0.75, y: height * 0.65, r: 480, color: 'rgba(191, 149, 63, 0.15)', vx: -0.09, vy: 0.09 },
+                    { x: width * 0.5, y: height * 0.2, r: 380, color: 'rgba(59, 130, 246, 0.15)', vx: 0.07, vy: -0.07 }
                 ];
             }
 
@@ -377,19 +691,50 @@
             drawGalaxy();
         })();
 
-        // --- License Form Verification ---
+        // --- View & Navigation Management ---
+        const loginView = document.getElementById("login-view");
+        const appHubView = document.getElementById("app-hub-view");
+        const activeKeyDisplay = document.getElementById("active-key-display");
         const form = document.getElementById("login-form");
         const keyInput = document.getElementById("license-key");
         const submitBtn = document.getElementById("submit-btn");
         const messageBox = document.getElementById("message");
+        const btnSwitchKey = document.getElementById("btn-switch-key");
+        const btnLaunchRoulette = document.getElementById("btn-launch-roulette");
 
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
 
-        const startupError = `{{STARTUP_ERROR}}`;
-        if (startupError && startupError !== '{{' + 'STARTUP_ERROR}}') {
-            showMessage(startupError, 'error');
+        // Check initial state
+        const serverAuthed = `{{IS_AUTHENTICATED}}` === "true";
+        const savedKey = localStorage.getItem("roulette_license_key") || `{{SAVED_KEY}}`;
+
+        if (serverAuthed && savedKey && savedKey !== '{{' + 'SAVED_KEY}}') {
+            showAppHub(savedKey);
         }
+
+        function showAppHub(key) {
+            loginView.classList.add("hidden");
+            appHubView.classList.remove("hidden");
+            activeKeyDisplay.textContent = key || "EENON-VERIFIED";
+        }
+
+        function showLogin() {
+            appHubView.classList.add("hidden");
+            loginView.classList.remove("hidden");
+        }
+
+        btnSwitchKey.addEventListener("click", () => {
+            localStorage.removeItem("roulette_license_key");
+            showLogin();
+        });
+
+        btnLaunchRoulette.addEventListener("click", () => {
+            btnLaunchRoulette.textContent = "⏳ LAUNCHING...";
+            setTimeout(() => {
+                window.location.href = token ? `/?token=${token}` : `/`;
+            }, 300);
+        });
 
         function showMessage(text, type) {
             messageBox.className = `message-box ${type}`;
@@ -429,10 +774,10 @@
 
                 if (response.ok && data.success) {
                     localStorage.setItem("roulette_license_key", key);
-                    showMessage(data.message || "Key activated! Loading application...", "success");
+                    showMessage(data.message || "Key activated! Opening Stream Auction Hub...", "success");
                     setTimeout(() => {
-                        window.location.href = token ? `/?token=${token}` : `/`;
-                    }, 1200);
+                        showAppHub(key);
+                    }, 800);
                 } else {
                     showMessage(data.message || "Invalid or rejected key. Please check your key.", "error");
                     submitBtn.disabled = false;

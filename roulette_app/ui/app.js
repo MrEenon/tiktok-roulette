@@ -324,6 +324,7 @@ const dom = {
     setDiscordEnabled: document.getElementById('set-discord-enabled'),
     setDiscordUrl: document.getElementById('set-discord-url'),
     btnTestDiscord: document.getElementById('btn-test-discord'),
+    btnAppsHub: document.getElementById('btn-apps-hub'),
     btnLogout: document.getElementById('btn-logout')
 };
 
@@ -671,6 +672,12 @@ function setupEventHandlers() {
             }
             
             updatePlayersListUI();
+        });
+    }
+
+    if (dom.btnAppsHub) {
+        dom.btnAppsHub.addEventListener('click', () => {
+            window.location.href = '/hub';
         });
     }
 }

@@ -498,15 +498,15 @@ async def start_periodic_checker():
 # --- File Serving Routes (With auth protection) ---
 
 @app.get("/")
-async def get_index():
+async def get_index(request: Request):
     global AUTHENTICATED
-    if AUTHENTICATED:
+    view_hub = request.query_params.get("hub") == "true" or request.query_params.get("view") == "hub"
+    if AUTHENTICATED and not view_hub:
         index_path = os.path.join(UI_DIR, "index.html")
         if os.path.exists(index_path):
             return FileResponse(index_path)
         return HTMLResponse("<h3>index.html not found</h3>")
     else:
-        # Load and dynamically inject error message and saved key if any
         login_path = os.path.join(UI_DIR, "login.html")
         if os.path.exists(login_path):
             with open(login_path, "r", encoding="utf-8") as f:
@@ -515,12 +515,33 @@ async def get_index():
             error_msg = LICENSE_ERROR if LICENSE_ERROR else ""
             saved_key_val = LICENSE_KEY if LICENSE_KEY else ""
             checkbox_state = "checked" if LICENSE_KEY else ""
+            authed_state = "true" if AUTHENTICATED else "false"
             
             content = content.replace("{{STARTUP_ERROR}}", error_msg)
             content = content.replace("{{SAVED_KEY}}", saved_key_val)
             content = content.replace("{{SAVE_KEY_CHECKED}}", checkbox_state)
+            content = content.replace("{{IS_AUTHENTICATED}}", authed_state)
             return HTMLResponse(content)
         return HTMLResponse("<h3>login.html not found</h3>")
+
+@app.get("/hub")
+async def get_hub():
+    login_path = os.path.join(UI_DIR, "login.html")
+    if os.path.exists(login_path):
+        with open(login_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        
+        error_msg = LICENSE_ERROR if LICENSE_ERROR else ""
+        saved_key_val = LICENSE_KEY if LICENSE_KEY else ""
+        checkbox_state = "checked" if LICENSE_KEY else ""
+        authed_state = "true" if AUTHENTICATED else "false"
+        
+        content = content.replace("{{STARTUP_ERROR}}", error_msg)
+        content = content.replace("{{SAVED_KEY}}", saved_key_val)
+        content = content.replace("{{SAVE_KEY_CHECKED}}", checkbox_state)
+        content = content.replace("{{IS_AUTHENTICATED}}", authed_state)
+        return HTMLResponse(content)
+    return HTMLResponse("<h3>hub not found</h3>")
 
 @app.get("/app.js")
 async def get_app():
