@@ -632,10 +632,9 @@ function setupEventHandlers() {
 
     if (dom.announcementDismiss) {
         dom.announcementDismiss.addEventListener('click', () => {
+            dismissAnnouncement();
             if (game.ws && game.ws.readyState === WebSocket.OPEN) {
                 game.ws.send(JSON.stringify({ type: "dismiss_announcement" }));
-            } else {
-                dismissAnnouncement();
             }
         });
     }
@@ -1796,6 +1795,15 @@ function resetGame() {
     addLog("Game has been reset.", 'info');
     
     processBidQueue();
+}
+
+function dismissAnnouncement() {
+    if (dom.announcementBanner) {
+        dom.announcementBanner.classList.add('hidden');
+    }
+    if (confetti) {
+        confetti.stop();
+    }
 }
 
 function processBidQueue() {
