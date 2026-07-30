@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EENON STREAM AUCTION SUITE - App Launcher</title>
+    <title>EENON STREAM AUCTION SUITE - App Launcher & Packages</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@
             justify-content: center;
             overflow-x: hidden;
             position: relative;
-            padding: 30px 20px;
+            padding: 40px 20px;
         }
 
         #galaxy-canvas {
@@ -53,13 +53,14 @@
             pointer-events: none;
         }
 
-        /* --- LOGIN CARD VIEW --- */
+        /* --- LOGIN & PRICING CONTAINER --- */
         .login-container {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 480px;
-            padding: 20px;
+            max-width: 1050px;
+            margin: 0 auto;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .card {
@@ -72,7 +73,6 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7),
                         0 0 60px rgba(191, 149, 63, 0.2);
             text-align: center;
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes slideUp {
@@ -517,9 +517,10 @@
 
     <canvas id="galaxy-canvas"></canvas>
 
-    <!-- VIEW 1: LICENSE KEY VERIFICATION -->
+    <!-- VIEW 1: LICENSE KEY VERIFICATION & MONEY MAKER PACKAGES -->
     <div id="login-view" class="login-container">
-        <div class="card">
+        <!-- License Key Card -->
+        <div class="card" style="max-width: 480px; margin: 0 auto 45px auto;">
             <div class="logo-area">
                 <div class="logo-circle">
                     <span class="logo-icon">🔑</span>
@@ -553,10 +554,83 @@
                     JOIN OUR DISCORD COMMUNITY
                 </a>
             </div>
+        </div>
 
-            <div class="footer-text">
-                EENON'S MONEY MAKER SUITE @2026
+        <!-- MONEY MAKER PACKAGES SECTION -->
+        <div class="pricing-section">
+            <div class="pricing-header" style="text-align: center; margin-bottom: 30px;">
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 900; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;">MONEY MAKER PACKAGES</h2>
+                <p style="font-size: 14.5px; color: var(--text-muted); margin-top: 6px;">Select a package below to get instant key access in our Discord community</p>
             </div>
+
+            <div class="app-grid">
+                <!-- TIER 1: 1-WEEK PASS -->
+                <div class="app-card" style="border-color: rgba(255, 255, 255, 0.15);">
+                    <div>
+                        <div class="app-icon-wrapper" style="background: rgba(255, 255, 255, 0.1); box-shadow: none;">
+                            <span>⏱️</span>
+                        </div>
+                        <h3 class="app-name">1-Week Pass</h3>
+                        <div style="font-size: 32px; font-weight: 900; color: #ffffff; margin-bottom: 6px;">$50 <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">/ week</span></div>
+                        <p class="app-desc">Everything you need to get going fast.</p>
+                        
+                        <ul class="feature-list">
+                            <li><span class="feature-icon">✓</span> Step-by-step video setup guide</li>
+                            <li><span class="feature-icon">✓</span> 1 week access to stream tool</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="https://discord.gg/urANbXyPy" target="_blank" class="btn-launch" style="text-align: center; text-decoration: none; display: block; background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: none;">GET 1-WEEK PASS</a>
+                </div>
+
+                <!-- TIER 2: 1-MONTH PASS (FEATURED) -->
+                <div class="app-card active" style="border-color: rgba(191, 149, 63, 0.85); transform: scale(1.02); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 45px rgba(191, 149, 63, 0.3);">
+                    <span class="app-badge badge-active" style="background: rgba(191, 149, 63, 0.2); color: var(--gold-light); border-color: rgba(191, 149, 63, 0.5);">⭐ MOST POPULAR</span>
+                    <div>
+                        <div class="app-icon-wrapper">
+                            <span>🎡</span>
+                        </div>
+                        <h3 class="app-name">1-Month Pass</h3>
+                        <div style="font-size: 34px; font-weight: 900; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">$150 <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">/ month</span></div>
+                        <p class="app-desc">For creators ready to level up their stream.</p>
+                        
+                        <ul class="feature-list">
+                            <li><span class="feature-icon">✓</span> Help with stream Setup</li>
+                            <li><span class="feature-icon">✓</span> Access to streaming tool aka (Money Maker)</li>
+                            <li><span class="feature-icon">✓</span> Live support whenever you need help</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="https://discord.gg/urANbXyPy" target="_blank" class="btn-launch" style="text-align: center; text-decoration: none; display: block;">GET 1-MONTH PASS</a>
+                </div>
+
+                <!-- TIER 3: VIP LIFETIME (BEST VALUE) -->
+                <div class="app-card" style="border-color: rgba(168, 85, 247, 0.6); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.25);">
+                    <span class="app-badge badge-active" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border-color: rgba(168, 85, 247, 0.5);">👑 BEST VALUE</span>
+                    <div>
+                        <div class="app-icon-wrapper" style="background: linear-gradient(135deg, #a855f7 0%, #e9d5ff 50%, #7e22ce 100%); box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);">
+                            <span>👑</span>
+                        </div>
+                        <h3 class="app-name">VIP Lifetime</h3>
+                        <div style="font-size: 34px; font-weight: 900; color: #c084fc; margin-bottom: 6px;">$250 <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">/ lifetime</span></div>
+                        <p class="app-desc">Pay once, get everything forever.</p>
+                        
+                        <ul class="feature-list">
+                            <li><span class="feature-icon" style="color: #c084fc;">✓</span> Lifetime access (no monthly fees)</li>
+                            <li><span class="feature-icon" style="color: #c084fc;">✓</span> Early Access to future stream tools</li>
+                            <li><span class="feature-icon" style="color: #c084fc;">✓</span> Help with stream Setup</li>
+                            <li><span class="feature-icon" style="color: #c084fc;">✓</span> Access to streaming tool aka (Money Maker)</li>
+                            <li><span class="feature-icon" style="color: #c084fc;">✓</span> Priority live support</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="https://discord.gg/urANbXyPy" target="_blank" class="btn-launch" style="text-align: center; text-decoration: none; display: block; background: linear-gradient(135deg, #a855f7 0%, #e9d5ff 50%, #7e22ce 100%); color: #0b0c10; box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);">GET VIP LIFETIME</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-text" style="margin-top: 45px;">
+            EENON'S MONEY MAKER SUITE @2026 — POWERING LIVE STREAM MONETIZATION
         </div>
     </div>
 
