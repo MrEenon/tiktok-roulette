@@ -567,6 +567,7 @@ function setupEventHandlers() {
             if (game.state === 'spinning') return;
             game.auctionStarted = true;
             syncStartButtonUI();
+            sendSettingsUpdate();
             startCountdown();
             addLog("🟢 AUCTION ACTIVE! Bids and entries are now active!", "info");
         });
@@ -583,6 +584,7 @@ function setupEventHandlers() {
             if (game.state === 'spinning') return;
             game.auctionStarted = true;
             syncStartButtonUI();
+            sendSettingsUpdate();
 
             const winnerIdx = determineWinnerIndex();
             if (game.ws && game.ws.readyState === WebSocket.OPEN) {
@@ -730,11 +732,12 @@ function sendSettingsUpdate() {
     const suddenDeathTime = dom.setSuddenDeathTime ? Math.max(5, parseInt(dom.setSuddenDeathTime.value) || 90) : game.config.suddenDeathTime;
     const entriesLocked = dom.setLockEntries ? dom.setLockEntries.checked : game.config.entriesLocked;
     const manualStart = dom.setManualStart ? dom.setManualStart.checked : game.config.manualStart;
+    const auctionStarted = game.auctionStarted;
     const autoIncreaseBids = dom.setAutoIncrease ? dom.setAutoIncrease.checked : game.config.autoIncreaseBids;
     const autoIncreaseGoal = dom.setAutoIncreaseGoal ? Math.max(1, parseFloat(dom.setAutoIncreaseGoal.value) || 10.0) : game.config.autoIncreaseGoal;
     const autoIncreaseStep = dom.setAutoIncreaseStep ? Math.max(1, parseInt(dom.setAutoIncreaseStep.value) || 250) : game.config.autoIncreaseStep;
     
-    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked, manualStart, autoIncreaseBids, autoIncreaseGoal, autoIncreaseStep };
+    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked, manualStart, auctionStarted, autoIncreaseBids, autoIncreaseGoal, autoIncreaseStep };
     
     if (game.ws && game.ws.readyState === WebSocket.OPEN) {
         game.ws.send(JSON.stringify({
@@ -766,6 +769,11 @@ function applySettingsUpdate(data) {
     if (data.manualStart !== undefined) {
         game.config.manualStart = data.manualStart;
         if (dom.setManualStart) dom.setManualStart.checked = data.manualStart;
+    }
+    
+    if (data.auctionStarted !== undefined) {
+        game.auctionStarted = data.auctionStarted;
+        syncStartButtonUI();
     }
     
     if (data.entriesLocked !== undefined) {
@@ -1442,12 +1450,7 @@ function startCountdown(duration) {
 
 function updateTimerDisplay() {
     let formattedTimer = "";
-    if (game.config.manualStart && !game.auctionStarted && game.state === 'idle') {
-        dom.timerDisplay.classList.remove('snipe-warning');
-        dom.timerDisplay.classList.remove('sudden-death-warning');
-        formattedTimer = "PRESS START";
-        dom.timerDisplay.textContent = "PRESS START";
-    } else if (game.state === 'snipe_countdown' || game.state === 'paused_snipe') {
+    if (game.state === 'snipe_countdown' || game.state === 'paused_snipe') {
         dom.timerDisplay.classList.add('snipe-warning');
         dom.timerDisplay.classList.remove('sudden-death-warning');
         formattedTimer = `SNIPE: ${game.timer}s`;
