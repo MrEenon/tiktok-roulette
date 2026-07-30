@@ -561,13 +561,14 @@ function setupEventHandlers() {
         }
     });
     
-    // ▶️ START ROUND button (Starts the auction & countdown timer)
+    // ▶️ START / 🟢 ACTIVE button
     if (dom.btnStartRound) {
         dom.btnStartRound.addEventListener('click', () => {
             if (game.state === 'spinning') return;
             game.auctionStarted = true;
+            syncStartButtonUI();
             startCountdown();
-            addLog("▶️ AUCTION STARTED! Bids and entries are now active!", "info");
+            addLog("🟢 AUCTION ACTIVE! Bids and entries are now active!", "info");
         });
     }
 
@@ -581,6 +582,7 @@ function setupEventHandlers() {
             }
             if (game.state === 'spinning') return;
             game.auctionStarted = true;
+            syncStartButtonUI();
 
             const winnerIdx = determineWinnerIndex();
             if (game.ws && game.ws.readyState === WebSocket.OPEN) {
@@ -1268,6 +1270,21 @@ function recalculateCoinsAndPlayers() {
     syncStatsDisplay();
 }
 
+function syncStartButtonUI() {
+    if (!dom.btnStartRound) return;
+    if (game.auctionStarted) {
+        dom.btnStartRound.textContent = "🟢 ACTIVE";
+        dom.btnStartRound.style.background = "linear-gradient(135deg, #059669 0%, #10b981 100%)";
+        dom.btnStartRound.style.boxShadow = "0 0 15px rgba(16, 185, 129, 0.6)";
+        dom.btnStartRound.style.borderColor = "#34d399";
+    } else {
+        dom.btnStartRound.textContent = "▶️ START";
+        dom.btnStartRound.style.background = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+        dom.btnStartRound.style.boxShadow = "none";
+        dom.btnStartRound.style.borderColor = "transparent";
+    }
+}
+
 function syncStatsDisplay() {
     const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
     dom.statPlayers.textContent = uniquePlayerIds.size;
@@ -1276,6 +1293,7 @@ function syncStatsDisplay() {
     if (dom.widgetTotalParticipants) dom.widgetTotalParticipants.textContent = uniquePlayerIds.size;
     if (dom.widgetTotalCoins) dom.widgetTotalCoins.textContent = game.totalCoins;
     
+    syncStartButtonUI();
     updateStartButtonState(uniquePlayerIds.size);
     updateRevenueGoalWidget();
     updatePlayersListUI();
