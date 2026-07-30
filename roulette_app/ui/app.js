@@ -227,6 +227,7 @@ const game = {
         suddenDeathEnabled: true,
         suddenDeathTime: 90,
         entriesLocked: false,
+        manualStart: true,
         autoIncreaseBids: false,
         autoIncreaseGoal: 10.0,
         autoIncreaseStep: 250
@@ -304,6 +305,10 @@ const dom = {
     setJoinKeyword: document.getElementById('set-join-keyword'),
     btnResetGame: document.getElementById('btn-reset-game'),
     btnSpinNow: document.getElementById('btn-spin-now'),
+    btnStartWheel: document.getElementById('btn-start-wheel'),
+    btnStartWheelText: document.getElementById('btn-start-wheel-text'),
+    startWheelContainer: document.getElementById('start-wheel-container'),
+    setManualStart: document.getElementById('set-manual-start'),
     btnPauseTimer: document.getElementById('btn-pause-timer'),
     overlayUrl: document.getElementById('overlay-url'),
     btnCopyUrl: document.getElementById('btn-copy-url'),
@@ -554,22 +559,38 @@ function setupEventHandlers() {
         }
     });
     
-    dom.btnSpinNow.addEventListener('click', () => {
+    const handleStartSpin = () => {
         const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
-        if (uniquePlayerIds.size >= 2) {
-            const winnerIdx = determineWinnerIndex();
-            if (game.ws && game.ws.readyState === WebSocket.OPEN) {
-                game.ws.send(JSON.stringify({
-                    type: "trigger_spin",
-                    data: { winnerIndex: winnerIdx }
-                }));
-            } else {
-                triggerSpin(winnerIdx);
-            }
-        } else {
+        if (uniquePlayerIds.size < 2) {
             alert("Need at least 2 players to spin the wheel!");
+            return;
         }
-    });
+        if (game.state === 'spinning') return;
+
+        const winnerIdx = determineWinnerIndex();
+        if (game.ws && game.ws.readyState === WebSocket.OPEN) {
+            game.ws.send(JSON.stringify({
+                type: "trigger_spin",
+                data: { winnerIndex: winnerIdx }
+            }));
+        } else {
+            triggerSpin(winnerIdx);
+        }
+    };
+
+    if (dom.btnSpinNow) {
+        dom.btnSpinNow.addEventListener('click', handleStartSpin);
+    }
+    if (dom.btnStartWheel) {
+        dom.btnStartWheel.addEventListener('click', handleStartSpin);
+    }
+
+    if (dom.setManualStart) {
+        dom.setManualStart.addEventListener('change', () => {
+            game.config.manualStart = dom.setManualStart.checked;
+            sendSettingsUpdate();
+        });
+    }
 
     if (dom.announcementDismiss) {
         dom.announcementDismiss.addEventListener('click', () => {
@@ -697,11 +718,12 @@ function sendSettingsUpdate() {
     const suddenDeathEnabled = dom.setSuddenDeath ? dom.setSuddenDeath.checked : game.config.suddenDeathEnabled;
     const suddenDeathTime = dom.setSuddenDeathTime ? Math.max(5, parseInt(dom.setSuddenDeathTime.value) || 90) : game.config.suddenDeathTime;
     const entriesLocked = dom.setLockEntries ? dom.setLockEntries.checked : game.config.entriesLocked;
+    const manualStart = dom.setManualStart ? dom.setManualStart.checked : game.config.manualStart;
     const autoIncreaseBids = dom.setAutoIncrease ? dom.setAutoIncrease.checked : game.config.autoIncreaseBids;
     const autoIncreaseGoal = dom.setAutoIncreaseGoal ? Math.max(1, parseFloat(dom.setAutoIncreaseGoal.value) || 10.0) : game.config.autoIncreaseGoal;
     const autoIncreaseStep = dom.setAutoIncreaseStep ? Math.max(1, parseInt(dom.setAutoIncreaseStep.value) || 250) : game.config.autoIncreaseStep;
     
-    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked, autoIncreaseBids, autoIncreaseGoal, autoIncreaseStep };
+    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked, manualStart, autoIncreaseBids, autoIncreaseGoal, autoIncreaseStep };
     
     if (game.ws && game.ws.readyState === WebSocket.OPEN) {
         game.ws.send(JSON.stringify({
@@ -729,6 +751,11 @@ function applySettingsUpdate(data) {
     game.config.minBid = data.minBid;
     game.config.roundTime = data.roundTime;
     game.config.gameMode = data.gameMode;
+    
+    if (data.manualStart !== undefined) {
+        game.config.manualStart = data.manualStart;
+        if (dom.setManualStart) dom.setManualStart.checked = data.manualStart;
+    }
     
     if (data.entriesLocked !== undefined) {
         game.config.entriesLocked = data.entriesLocked;
@@ -1188,8 +1215,37 @@ function registerPlayerBid(uniqueId, nickname, avatarUrl, coins, giftName) {
         }
     }
 
-    if (game.state === 'idle' && uniquePlayerIds.size >= 2) {
+    if (!game.config.manualStart && game.state === 'idle' && uniquePlayerIds.size >= 2) {
         startCountdown();
+    }
+}
+
+function updateStartButtonState(playerCount) {
+    if (!dom.btnStartWheel || !dom.btnStartWheelText) return;
+    const count = playerCount !== undefined ? playerCount : new Set(game.entries.map(e => e.player.uniqueId)).size;
+
+    if (game.state === 'spinning') {
+        dom.btnStartWheel.disabled = true;
+        dom.btnStartWheel.classList.remove('pulse-green');
+        dom.btnStartWheelText.textContent = "🎡 WHEEL IS SPINNING...";
+    } else if (game.state === 'countdown' || game.state === 'snipe_countdown' || game.state === 'sudden_death_countdown') {
+        dom.btnStartWheel.disabled = false;
+        dom.btnStartWheel.classList.add('pulse-green');
+        dom.btnStartWheelText.textContent = "🎲 SPIN WHEEL NOW!";
+    } else {
+        if (count >= 2) {
+            dom.btnStartWheel.disabled = false;
+            dom.btnStartWheel.classList.add('pulse-green');
+            dom.btnStartWheelText.textContent = `▶️ START SPINNER (${count} PLAYERS READY)`;
+        } else if (count === 1) {
+            dom.btnStartWheel.disabled = true;
+            dom.btnStartWheel.classList.remove('pulse-green');
+            dom.btnStartWheelText.textContent = "▶️ START SPINNER (WAITING FOR 2ND PLAYER)";
+        } else {
+            dom.btnStartWheel.disabled = true;
+            dom.btnStartWheel.classList.remove('pulse-green');
+            dom.btnStartWheelText.textContent = "▶️ START SPINNER (NEEDS 2+ PLAYERS)";
+        }
     }
 }
 
@@ -1206,6 +1262,7 @@ function syncStatsDisplay() {
     if (dom.widgetTotalParticipants) dom.widgetTotalParticipants.textContent = uniquePlayerIds.size;
     if (dom.widgetTotalCoins) dom.widgetTotalCoins.textContent = game.totalCoins;
     
+    updateStartButtonState(uniquePlayerIds.size);
     updateRevenueGoalWidget();
     updatePlayersListUI();
 }
@@ -1316,6 +1373,7 @@ function startCountdown(duration) {
     }
     game.timer = duration !== undefined ? duration : game.config.roundTime;
     updateTimerDisplay();
+    updateStartButtonState();
     
     if (dom.btnPauseTimer) {
         dom.btnPauseTimer.textContent = "Pause Timer";
@@ -1410,6 +1468,7 @@ function triggerSpin(winnerIdx) {
     
     game.state = 'spinning';
     dom.timerDisplay.textContent = "SPINNING";
+    updateStartButtonState();
     
     game.shuffleGridPrevStep = -1;
     game.shuffleGridActiveIndex = -1;
@@ -1506,8 +1565,14 @@ function resolveSpinResult(winningEntryIndex) {
                 game.suddenDeathTriggered = true;
                 triggerSuddenDeath();
             } else if (remainingUniquePlayers.size > 1) {
-                // Resume countdown for remaining players
-                startCountdown();
+                // Check if manual start is required before resuming countdown
+                if (!game.config.manualStart) {
+                    startCountdown();
+                } else {
+                    game.state = 'idle';
+                    updateStartButtonState(remainingUniquePlayers.size);
+                    addLog(`⏸️ Wheel ready for next spin. Click 'START SPINNER' when ready!`, 'info');
+                }
             } else {
                 // No entries left
                 resetGame();

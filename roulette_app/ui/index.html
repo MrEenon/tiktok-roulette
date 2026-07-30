@@ -121,6 +121,14 @@
                 </div>
             </div>
 
+            <!-- PROMINENT START WHEEL ACTION BUTTON -->
+            <div id="start-wheel-container" class="start-wheel-container" style="text-align: center; margin: 15px 0 20px 0;">
+                <button id="btn-start-wheel" class="btn-start-wheel" disabled>
+                    <span class="btn-icon">▶️</span>
+                    <span id="btn-start-wheel-text">START SPINNER (NEEDS 2+ PLAYERS)</span>
+                </button>
+            </div>
+
             <!-- Wheel Container -->
             <div class="wheel-outer-wrapper">
                 <div class="wheel-container">
@@ -244,6 +252,12 @@
                             <label for="set-sound" class="toggle-label"></label>
                         </div>
 
+                        <label for="set-manual-start">Manual Start Required:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-manual-start" checked>
+                            <label for="set-manual-start" class="toggle-label"></label>
+                        </div>
+
                         <label for="set-lock-entries">Lock Entries:</label>
                         <div class="toggle-switch">
                             <input type="checkbox" id="set-lock-entries">
@@ -298,7 +312,7 @@
                     
                     <div class="button-row" style="margin-top: 15px;">
                         <button id="btn-pause-timer" class="btn btn-secondary" disabled>Pause Timer</button>
-                        <button id="btn-spin-now" class="btn btn-success">Force Spin</button>
+                        <button id="btn-spin-now" class="btn btn-success" style="font-weight: 800; font-size: 13.5px;">▶️ START / SPIN WHEEL</button>
                     </div>
                     <div class="button-row" style="margin-top: 8px;">
                         <button id="btn-reset-game" class="btn btn-warning" style="width: 100%;">Reset Game</button>

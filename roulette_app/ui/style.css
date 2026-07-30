@@ -1426,4 +1426,51 @@ body.transparent-bg #bottom-left-stats-widget {
     box-shadow: 0 0 10px rgba(46, 204, 113, 0.6) !important;
 }
 
+/* --- PROMINENT START WHEEL BUTTON --- */
+.start-wheel-container {
+    position: relative;
+    z-index: 100;
+}
+
+.btn-start-wheel {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: 2px solid rgba(52, 211, 153, 0.6);
+    border-radius: 40px;
+    padding: 16px 36px;
+    font-size: 17px;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.4), 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-start-wheel:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 0 40px rgba(52, 211, 153, 0.85), 0 15px 35px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+.btn-start-wheel:disabled {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.4);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.btn-start-wheel.pulse-green {
+    animation: pulseStartGreen 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseStartGreen {
+    0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+    50% { box-shadow: 0 0 45px rgba(52, 211, 153, 0.85); transform: scale(1.03); }
+}
+
 
