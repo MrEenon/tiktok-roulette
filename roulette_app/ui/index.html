@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
     <div id="app">
@@ -117,6 +117,12 @@
                     <span class="stat-label">COINS</span>
                     <div class="stat-value highlight-coins">
                         <span id="stat-coins">0</span>
+                    </div>
+                </div>
+                <div id="stat-vouches-pill" class="stat-pill hidden">
+                    <span class="stat-label">VOUCHES</span>
+                    <div class="stat-value" style="color: #6ee7b7;">
+                        <span id="stat-vouches">50+</span>
                     </div>
                 </div>
             </div>
@@ -256,6 +262,15 @@
                             <label for="set-lock-entries" class="toggle-label"></label>
                         </div>
                         
+                        <label for="set-show-vouches">Display Vouches Counter:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="set-show-vouches">
+                            <label for="set-show-vouches" class="toggle-label"></label>
+                        </div>
+
+                        <label for="set-vouches-count" class="vouches-only hidden">Custom Vouches Text:</label>
+                        <input type="text" id="set-vouches-count" value="50+" class="vouches-only hidden">
+                        
                         <label for="set-auto-increase">Auto Increase Bids:</label>
                         <div class="toggle-switch">
                             <input type="checkbox" id="set-auto-increase">
@@ -367,6 +382,6 @@
     </div>
 
     <!-- Application Script -->
-    <script src="app.js?v=19"></script>
+    <script src="app.js?v=20"></script>
 </body>
 </html>

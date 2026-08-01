@@ -230,7 +230,9 @@ const game = {
         manualStart: true,
         autoIncreaseBids: false,
         autoIncreaseGoal: 10.0,
-        autoIncreaseStep: 250
+        autoIncreaseStep: 250,
+        showVouches: false,
+        vouchesCount: "50+"
     },
     roundAutoIncreased: false,
     auctionStarted: false,
@@ -294,6 +296,10 @@ const dom = {
     setAutoIncrease: document.getElementById('set-auto-increase'),
     setAutoIncreaseGoal: document.getElementById('set-auto-increase-goal'),
     setAutoIncreaseStep: document.getElementById('set-auto-increase-step'),
+    setShowVouches: document.getElementById('set-show-vouches'),
+    setVouchesCount: document.getElementById('set-vouches-count'),
+    statVouchesPill: document.getElementById('stat-vouches-pill'),
+    statVouches: document.getElementById('stat-vouches'),
     topStatRevenueCard: document.getElementById('top-stat-revenue-card'),
     widgetRevenueText: document.getElementById('widget-revenue-text'),
     widgetRevenueProgress: document.getElementById('widget-revenue-progress'),
@@ -630,6 +636,23 @@ function setupEventHandlers() {
         });
     }
 
+    if (dom.setShowVouches) {
+        dom.setShowVouches.addEventListener('change', () => {
+            const isChecked = dom.setShowVouches.checked;
+            document.querySelectorAll('.vouches-only').forEach(el => {
+                if (isChecked) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+            sendSettingsUpdate();
+        });
+    }
+
+    if (dom.setVouchesCount) {
+        dom.setVouchesCount.addEventListener('input', () => {
+            sendSettingsUpdate();
+        });
+    }
+
     if (dom.announcementDismiss) {
         dom.announcementDismiss.addEventListener('click', () => {
             dismissAnnouncement();
@@ -760,8 +783,10 @@ function sendSettingsUpdate() {
     const autoIncreaseBids = dom.setAutoIncrease ? dom.setAutoIncrease.checked : game.config.autoIncreaseBids;
     const autoIncreaseGoal = dom.setAutoIncreaseGoal ? Math.max(1, parseFloat(dom.setAutoIncreaseGoal.value) || 10.0) : game.config.autoIncreaseGoal;
     const autoIncreaseStep = dom.setAutoIncreaseStep ? Math.max(1, parseInt(dom.setAutoIncreaseStep.value) || 250) : game.config.autoIncreaseStep;
+    const showVouches = dom.setShowVouches ? dom.setShowVouches.checked : game.config.showVouches;
+    const vouchesCount = dom.setVouchesCount ? dom.setVouchesCount.value.trim() || "50+" : game.config.vouchesCount;
     
-    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked, manualStart, auctionStarted, autoIncreaseBids, autoIncreaseGoal, autoIncreaseStep };
+    const payload = { minBid, roundTime, gameMode, snipeDelayEnabled, snipeDelayTime, shuffleModeEnabled, suddenDeathEnabled, suddenDeathTime, entriesLocked, manualStart, auctionStarted, autoIncreaseBids, autoIncreaseGoal, autoIncreaseStep, showVouches, vouchesCount };
     
     if (game.ws && game.ws.readyState === WebSocket.OPEN) {
         game.ws.send(JSON.stringify({
@@ -885,6 +910,34 @@ function applySettingsUpdate(data) {
     if (data.autoIncreaseStep !== undefined) {
         game.config.autoIncreaseStep = data.autoIncreaseStep;
         if (dom.setAutoIncreaseStep) dom.setAutoIncreaseStep.value = data.autoIncreaseStep;
+    }
+
+    if (data.showVouches !== undefined) {
+        game.config.showVouches = data.showVouches;
+        if (dom.setShowVouches) dom.setShowVouches.checked = data.showVouches;
+        
+        const vouchesElements = document.querySelectorAll('.vouches-only');
+        vouchesElements.forEach(el => {
+            if (data.showVouches) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+    }
+
+    if (data.vouchesCount !== undefined) {
+        game.config.vouchesCount = data.vouchesCount;
+        if (dom.setVouchesCount) dom.setVouchesCount.value = data.vouchesCount;
+        if (dom.statVouches) dom.statVouches.textContent = data.vouchesCount;
+    }
+
+    if (dom.statVouchesPill) {
+        if (game.config.showVouches) {
+            dom.statVouchesPill.classList.remove('hidden');
+        } else {
+            dom.statVouchesPill.classList.add('hidden');
+        }
     }
     
     // Sync input values if they exist on this client
@@ -1327,6 +1380,15 @@ function syncStatsDisplay() {
     const uniquePlayerIds = new Set(game.entries.map(e => e.player.uniqueId));
     dom.statPlayers.textContent = uniquePlayerIds.size;
     dom.statCoins.textContent = game.totalCoins;
+    
+    if (dom.statVouches) dom.statVouches.textContent = game.config.vouchesCount || "50+";
+    if (dom.statVouchesPill) {
+        if (game.config.showVouches) {
+            dom.statVouchesPill.classList.remove('hidden');
+        } else {
+            dom.statVouchesPill.classList.add('hidden');
+        }
+    }
     
     if (dom.widgetTotalParticipants) dom.widgetTotalParticipants.textContent = uniquePlayerIds.size;
     if (dom.widgetTotalCoins) dom.widgetTotalCoins.textContent = game.totalCoins;
