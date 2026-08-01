@@ -28,6 +28,12 @@ admin_ui_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "admin_ap
 if os.path.exists(admin_ui_dir):
     app.mount("/admin", NoCacheStaticFiles(directory=admin_ui_dir, html=True), name="admin")
 
+# Mount TikTok Follows Boost App at /follows and /boost
+follows_ui_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "roulette_app", "ui", "follows"))
+if os.path.exists(follows_ui_dir):
+    app.mount("/follows", NoCacheStaticFiles(directory=follows_ui_dir, html=True), name="follows")
+    app.mount("/boost", NoCacheStaticFiles(directory=follows_ui_dir, html=True), name="boost")
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))

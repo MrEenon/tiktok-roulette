@@ -1,0 +1,10 @@
+Generated HWID: 86932cfc09a1c08d8ab11635736f57977e8d2b04f465d39b404bee7db997c982
+Launching Roulette desktop app wrapper. URL: http://127.0.0.1:8001/?token=5aab6fcee15d14829281f6c9f2466adf
+Waiting for local roulette server to initialize...
+Exception in thread Thread-1 (run_local_server):
+Traceback (most recent call last):
+  File "threading.py", line 1082, in _bootstrap_inner
+  File "threading.py", line 1024, in run
+  File "main.py", line 29, in run_local_server
+ModuleNotFoundError: No module named 'roulette_app.local_server'
+Application closed.

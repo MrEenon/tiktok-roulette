@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eenon TikTok Boost - Web3 Follower Growth Platform</title>
+    <meta name="description" content="Instant TikTok Follower Engine with 100% Dedicated Crypto Checkout (BTC, SOL, LTC). Guaranteed 24-Hour Delivery.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Ambient Glowing Background Spheres -->
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="#" class="brand-logo">
+                <div class="logo-badge-icon"><i class="fa-brands fa-tiktok"></i></div>
+                <span>EENON <span class="text-gradient-pink">BOOST</span></span>
+            </a>
+
+            <div class="nav-actions">
+                <a href="/hub" class="cart-btn-nav" style="text-decoration: none; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #fff;">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Apps Hub</span>
+                </a>
+                <div class="status-pill">
+                    <div class="status-dot"></div>
+                    <span>100% Operational</span>
+                </div>
+                <button type="button" class="cart-btn-nav" id="btn-open-cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Cart</span>
+                    <span class="cart-count-badge" id="nav-cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-headline">
+                Skyrocket Your TikTok <span class="text-gradient-pink">Followers</span> with <span class="text-gradient-cyan">Crypto</span>
+            </h1>
+            <p class="hero-subhead">
+                100% Dedicated Crypto Checkout (BTC, SOL, LTC). Automated SMM fulfillment with guaranteed 24-hour delivery.
+            </p>
+
+            <div class="stats-banner margin-top-20">
+                <div class="stat-item"><i class="fa-solid fa-bolt text-cyan"></i> Instant Dispatch</div>
+                <div class="stat-item"><i class="fa-solid fa-shield-halved text-pink"></i> 24-Hour Guarantee</div>
+                <div class="stat-item"><i class="fa-solid fa-star text-gold"></i> 4.9/5 Rating</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Booster Form Section -->
+    <section class="booster-container container" id="booster-section">
+        <div class="glass-card booster-main-card">
+            <form id="booster-form">
+                
+                <!-- STEP 1: CONNECT TIKTOK ACCOUNT -->
+                <div class="step-box">
+                    <div class="step-section-header">
+                        <div class="step-number-badge">1</div>
+                        <h3>Enter TikTok Username</h3>
+                    </div>
+
+                    <div class="handle-input-box">
+                        <div class="custom-input-wrap">
+                            <i class="fa-solid fa-at input-prefix-icon"></i>
+                            <input type="text" id="tiktok-handle" class="custom-input" placeholder="e.g. username" required>
+                        </div>
+                        <button type="button" class="btn-connect" id="btn-connect-account">
+                            <i class="fa-solid fa-plug"></i> Connect Account
+                        </button>
+                    </div>
+
+                    <!-- Profile Avatar Card -->
+                    <div id="connected-profile-card" class="connected-profile-card hidden">
+                        <img id="profile-avatar-img" src="https://unavatar.io/tiktok/demo" alt="TikTok Avatar" class="profile-avatar-img">
+                        <div class="profile-info">
+                            <strong id="profile-handle-display">@username</strong>
+                            <span><i class="fa-solid fa-circle-check"></i> Profile Connected & Ready</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: SELECT FOLLOWER PACKAGE -->
+                <div class="step-box margin-top-32">
+                    <div class="step-section-header">
+                        <div class="step-number-badge">2</div>
+                        <h3>Select Follower Package</h3>
+                    </div>
+
+                    <div class="packages-grid">
+                        <!-- 500 Followers -->
+                        <div class="pkg-card" data-qty="500" data-price="15.00">
+                            <span class="pkg-tag">Starter</span>
+                            <div class="pkg-amount-val">500</div>
+                            <div class="pkg-unit-label">TikTok Followers</div>
+                            <div class="pkg-price-val">$15.00</div>
+                        </div>
+
+                        <!-- 1,000 Followers (Popular) -->
+                        <div class="pkg-card active" data-qty="1000" data-price="20.00">
+                            <span class="pkg-tag popular">🔥 Most Popular</span>
+                            <div class="pkg-amount-val">1,000</div>
+                            <div class="pkg-unit-label">TikTok Followers</div>
+                            <div class="pkg-price-val">$20.00</div>
+                        </div>
+
+                        <!-- 2,500 Followers -->
+                        <div class="pkg-card" data-qty="2500" data-price="45.00">
+                            <span class="pkg-tag">Growth</span>
+                            <div class="pkg-amount-val">2,500</div>
+                            <div class="pkg-unit-label">TikTok Followers</div>
+                            <div class="pkg-price-val">$45.00</div>
+                        </div>
+
+                        <!-- 5,000 Followers -->
+                        <div class="pkg-card" data-qty="5000" data-price="80.00">
+                            <span class="pkg-tag">Pro Boost</span>
+                            <div class="pkg-amount-val">5,000</div>
+                            <div class="pkg-unit-label">TikTok Followers</div>
+                            <div class="pkg-price-val">$80.00</div>
+                        </div>
+
+                        <!-- 7,500 Followers (FLASH SALE) -->
+                        <div class="pkg-card flash-sale-card" data-qty="7500" data-price="85.00">
+                            <span class="pkg-tag flash-sale">⚡ FLASH SALE (35% OFF)</span>
+                            <div class="pkg-amount-val text-gradient-cyan">7,500</div>
+                            <div class="pkg-unit-label">TikTok Followers</div>
+                            <div class="price-row-flash">
+                                <span class="strikethrough-price">$130.00</span>
+                                <div class="pkg-price-val text-gold">$85.00</div>
+                            </div>
+                        </div>
+
+                        <!-- 10,000 Followers (FLASH SALE) -->
+                        <div class="pkg-card flash-sale-card" data-qty="10000" data-price="100.00">
+                            <span class="pkg-tag flash-sale">⚡ FLASH SALE (40% OFF)</span>
+                            <div class="pkg-amount-val text-gradient-pink">10,000</div>
+                            <div class="pkg-unit-label">TikTok Followers</div>
+                            <div class="price-row-flash">
+                                <span class="strikethrough-price">$165.00</span>
+                                <div class="pkg-price-val text-gold">$100.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: ADD TO CART SUMMARY -->
+                <div class="checkout-action-card">
+                    <div class="summary-row">
+                        <span>Target Account:</span>
+                        <strong id="summary-target-handle" class="text-pink">Not Connected</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Follower Package:</span>
+                        <strong id="summary-pkg-count">1,000 Followers</strong>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Package Price:</span>
+                        <strong id="summary-pkg-price" class="price-tag-big">$20.00</strong>
+                    </div>
+
+                    <button type="submit" class="btn-add-cart-primary">
+                        <i class="fa-solid fa-cart-plus"></i> ADD PACKAGE TO CART
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+    <!-- SHOPPING CART MODAL -->
+    <div class="modal-overlay hidden" id="shopping-cart-modal">
+        <div class="modal-container glass-card">
+            <div class="modal-header-row">
+                <h3><i class="fa-solid fa-bag-shopping text-cyan"></i> Your Shopping Cart</h3>
+                <button class="close-modal-btn" id="close-cart-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="cart-items-wrapper" class="cart-items-wrapper">
+                <!-- Cart item rows injected by JS -->
+            </div>
+
+            <div class="checkout-action-card margin-top-20">
+                <div class="summary-row total">
+                    <span>Total Subtotal:</span>
+                    <strong id="cart-modal-subtotal" class="price-tag-big">$1.80</strong>
+                </div>
+                <button type="button" class="btn-add-cart-primary margin-top-12" id="btn-proceed-checkout">
+                    <i class="fa-solid fa-lock"></i> PROCEED TO CRYPTO CHECKOUT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WEB3 CRYPTO CHECKOUT MODAL -->
+    <div class="modal-overlay hidden" id="payment-checkout-modal">
+        <div class="modal-container modal-container-wide glass-card">
+            <div class="modal-header-row">
+                <h3><i class="fa-brands fa-bitcoin text-gold"></i> Web3 Crypto Payment Checkout</h3>
+                <button class="close-modal-btn" id="close-checkout-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Top Total Header -->
+            <div class="checkout-action-card" style="margin-top:0; padding:16px 20px;">
+                <div class="summary-row" style="margin:0;">
+                    <span>Total Amount Due:</span>
+                    <strong id="checkout-due-amount" class="price-tag-big">$1.80</strong>
+                </div>
+            </div>
+
+            <!-- Single Crypto Payment Radio Selector -->
+            <div class="form-group margin-top-20">
+                <label style="font-size:14px; font-weight:800;"><i class="fa-solid fa-wallet text-gold"></i> Choose Your Payment Method <span class="text-gold">(Select 1 Only)</span> *</label>
+                
+                <div class="crypto-selector-grid">
+                    <!-- BTC -->
+                    <div class="crypto-radio-card" data-coin="btc">
+                        <div class="radio-dot"><div class="radio-dot-inner"></div></div>
+                        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/btc.svg" alt="BTC" class="crypto-tab-logo">
+                        <div class="crypto-tab-info">
+                            <strong>Bitcoin</strong>
+                            <span>BTC Network</span>
+                        </div>
+                    </div>
+
+                    <!-- SOL -->
+                    <div class="crypto-radio-card" data-coin="sol">
+                        <div class="radio-dot"><div class="radio-dot-inner"></div></div>
+                        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/sol.svg" alt="SOL" class="crypto-tab-logo">
+                        <div class="crypto-tab-info">
+                            <strong>Solana</strong>
+                            <span>SOL Network</span>
+                        </div>
+                    </div>
+
+                    <!-- LTC -->
+                    <div class="crypto-radio-card" data-coin="ltc">
+                        <div class="radio-dot"><div class="radio-dot-inner"></div></div>
+                        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/color/ltc.svg" alt="LTC" class="crypto-tab-logo">
+                        <div class="crypto-tab-info">
+                            <strong>Litecoin</strong>
+                            <span>LTC Network</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unselected Coin Prompt (Shows when no coin selected) -->
+            <div id="select-coin-prompt" class="select-coin-prompt margin-top-24">
+                <i class="fa-solid fa-hand-pointer text-gold" style="font-size: 28px; margin-bottom: 10px;"></i>
+                <strong style="font-size:16px; color:#fff;">Please select a payment currency above to continue</strong>
+                <span style="font-size:13px; color:var(--text-muted); margin-top:4px;">Choose either Bitcoin (BTC), Solana (SOL), or Litecoin (LTC).</span>
+            </div>
+
+            <!-- Deposit Form Body (Hidden until coin is selected) -->
+            <div id="crypto-form-body" class="margin-top-24 hidden">
+                <!-- 2-Column Deposit Layout -->
+                <div id="crypto-deposit-details" class="deposit-2col-layout">
+                    <div class="qr-frame-box">
+                        <img id="crypto-qr-img" src="" alt="Crypto QR" class="qr-img">
+                        <div class="qr-badge-hint"><i class="fa-solid fa-qrcode"></i> Scan with Mobile Wallet</div>
+                    </div>
+
+                    <div class="crypto-details-col">
+                        <div class="copy-info-box">
+                            <div class="copy-info-header">
+                                <span>Exact Deposit Amount</span>
+                                <span class="text-cyan" id="crypto-network-tag"><i class="fa-solid fa-clock"></i> ~15 mins</span>
+                            </div>
+                            <div class="copy-row">
+                                <strong id="crypto-est-amount" style="font-family:var(--font-mono); font-size:20px; color:var(--gold);">0.00 BTC</strong>
+                                <button type="button" class="btn-sm-copy" id="btn-copy-amount"><i class="fa-solid fa-copy"></i> Copy</button>
+                            </div>
+                        </div>
+
+                        <div class="copy-info-box margin-top-16">
+                            <div class="copy-info-header">
+                                <span id="crypto-coin-title">Wallet Address</span>
+                            </div>
+                            <div class="copy-row">
+                                <code id="display-crypto-address" style="font-family:var(--font-mono); font-size:13px; color:var(--tiktok-cyan); word-break:break-all;">---</code>
+                                <button type="button" class="btn-sm-copy" id="btn-copy-address"><i class="fa-solid fa-copy"></i> Copy</button>
+                            </div>
+                        </div>
+
+                        <!-- Customer Email Field for Receipt -->
+                        <div class="form-group margin-top-16">
+                            <label style="font-size:13px; font-weight:800; margin-bottom:6px; display:block;"><i class="fa-solid fa-envelope text-pink"></i> Email Address for Receipt *</label>
+                            <input type="email" id="customer-email" class="custom-input" placeholder="e.g. yourname@gmail.com" required style="padding:14px 16px;">
+                        </div>
+
+                        <!-- Blockchain TxID Input Field -->
+                        <div class="form-group margin-top-16">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <label style="font-size:13px; font-weight:800; margin:0;"><i class="fa-solid fa-receipt text-gold"></i> Blockchain TxID / Transaction Hash *</label>
+                                <button type="button" class="btn-txid-guide-link" id="btn-open-txid-guide">
+                                    <i class="fa-solid fa-circle-question text-cyan"></i> Where to find this?
+                                </button>
+                            </div>
+                            <input type="text" id="crypto-tx-id" class="custom-input" placeholder="Paste your TxID / Hash here..." required style="padding:14px 16px;">
+                            <span style="font-size:11px; color:var(--text-muted); display:block; margin-top:4px;"><i class="fa-solid fa-circle-info"></i> Used by our RPC scanner to verify deposit transfer directly to your wallet.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-add-cart-primary margin-top-24" id="btn-submit-crypto-checkout" style="padding:18px;">
+                    <i class="fa-solid fa-paper-plane"></i> I HAVE SENT CRYPTO PAYMENT & DISPATCH FOLLOWERS
+                </button>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- DEDICATED LIVE BLOCKCHAIN SCANNER MODAL SCREEN -->
+    <div class="modal-overlay hidden" id="live-blockchain-scanner-modal">
+        <div class="modal-container glass-card text-center" style="width: 580px; padding: 40px;">
+            <div class="radar-spinner-box margin-auto" style="margin:0 auto;">
+                <div class="radar-pulse"></div>
+                <i class="fa-solid fa-satellite-dish radar-icon text-cyan"></i>
+            </div>
+            
+            <h2 class="margin-top-20" style="font-size:26px; font-weight:900;">Live TxID Blockchain Verifier</h2>
+            <p class="text-muted margin-top-6" style="font-size:14px;">
+                Verifying transaction <code id="scanner-txid-display" class="text-gold" style="font-weight:800;">TxID...</code> on <span id="scanner-coin-name" class="text-gold" style="font-weight:800;">BTC</span> Network:
+            </p>
+
+            <div class="copy-info-box margin-top-16" style="text-align:center; background:rgba(0,0,0,0.5);">
+                <span style="font-size:11px; color:var(--text-muted); display:block;">TARGET DESTINATION WALLET:</span>
+                <code id="scanner-wallet-display" style="font-family:var(--font-mono); font-size:13px; color:var(--tiktok-cyan); word-break:break-all;">3MF3r9UpT932G2DTg4kFCdvok87pbJWEzz</code>
+            </div>
+
+            <div class="verify-status-badge margin-top-20" id="scanner-status-badge">
+                <i class="fa-solid fa-spinner fa-spin text-gold"></i> Validating TxID on Blockchain Node...
+            </div>
+
+            <div class="blockchain-progress-bar margin-top-20">
+                <div class="progress-fill" id="scanner-progress-fill" style="width: 25%;"></div>
+            </div>
+
+            <div class="checkout-action-card margin-top-24" style="padding:16px; text-align:left;">
+                <div class="summary-row" style="margin:0;">
+                    <span>Receipt Email Registered:</span>
+                    <strong id="scanner-email-display" class="text-pink">customer@gmail.com</strong>
+                </div>
+            </div>
+
+            <p class="text-muted margin-top-16" style="font-size:12px;">
+                <i class="fa-solid fa-shield-halved text-gold"></i> Followers will automatically dispatch & official receipt will be generated as soon as your transfer is detected on-chain.
+            </p>
+
+            <button type="button" class="btn-connect margin-top-20" id="btn-scanner-cancel" style="width:100%; justify-content:center; padding:14px;">
+                <i class="fa-solid fa-arrow-left"></i> Return to Payment Addresses
+            </button>
+        </div>
+    </div>
+
+    <!-- ORDER CONFIRMATION SUCCESS MODAL -->
+    <div class="modal-overlay hidden" id="order-success-modal">
+        <div class="modal-container glass-card text-center">
+            <div class="logo-badge-icon" style="margin: 0 auto; width: 60px; height: 60px; font-size: 28px; background: var(--grad-cyan);">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2 class="margin-top-15">Order Confirmed!</h2>
+            <p class="text-muted" style="font-size:14px;">Thank you for boosting with Eenon TikTok Boost.</p>
+
+            <div class="checkout-action-card margin-top-20" style="padding:16px;">
+                <span style="font-size:11px; font-weight:800; color:var(--text-muted);">CONFIRMATION NUMBER</span>
+                <h3 id="success-confirmation-num" style="font-family:var(--font-mono); font-size:24px; color:var(--gold); margin-top:4px;">#EON-98412</h3>
+            </div>
+
+            <div class="connected-profile-card margin-top-16" style="background:rgba(255, 0, 80, 0.08); border-color:rgba(255, 0, 80, 0.3);">
+                <i class="fa-solid fa-circle-notch fa-spin text-pink" style="font-size:24px;"></i>
+                <div class="profile-info text-left">
+                    <strong style="color:#fff; font-size:14px;">Guaranteed 24-Hour Delivery Window</strong>
+                    <span style="color:var(--text-muted);">Your order is queued! Followers will arrive in <strong>24 hours</strong>.</span>
+                </div>
+            </div>
+
+            <div class="checkout-action-card margin-top-16" style="padding:16px;">
+                <div class="summary-row"><span>Target Account:</span><strong id="success-target-handle" class="text-cyan">@username</strong></div>
+                <div class="summary-row"><span>Receipt Emailed To:</span><strong id="success-email-sent" class="text-pink">user@gmail.com</strong></div>
+            </div>
+
+            <div style="display:flex; gap:12px;" class="margin-top-20">
+                <button type="button" class="btn-connect" id="btn-download-receipt" style="flex:1; justify-content:center;">
+                    <i class="fa-solid fa-file-arrow-down"></i> Download Receipt
+                </button>
+                <button type="button" class="btn-add-cart-primary" id="btn-close-success" style="flex:1; padding:12px;">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHERE TO FIND TXID GUIDE MODAL -->
+    <div class="modal-overlay hidden" id="txid-guide-modal">
+        <div class="modal-container glass-card" style="width: 580px; padding: 36px;">
+            <div class="modal-header-row">
+                <h3><i class="fa-solid fa-circle-question text-cyan"></i> Where to Find Your TxID / Hash</h3>
+                <button class="close-modal-btn" id="close-txid-guide-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <p class="text-muted" style="font-size:14px; margin-bottom:16px;">
+                A <strong>TxID (Transaction Hash)</strong> is a unique code generated by your crypto wallet after you send funds. Here is how to find it in your wallet:
+            </p>
+
+            <div class="guide-steps-list">
+                <!-- Coinbase -->
+                <div class="guide-wallet-box">
+                    <strong style="color:var(--gold); font-size:14px;"><i class="fa-solid fa-wallet"></i> Coinbase & Coinbase Wallet</strong>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Go to <strong>Assets</strong> -> Tap the Crypto Sent (BTC/SOL/LTC) -> Select transaction -> Tap <strong>View on Block Explorer</strong> or copy <strong>Hash</strong>.</p>
+                </div>
+
+                <!-- Phantom -->
+                <div class="guide-wallet-box margin-top-12">
+                    <strong style="color:var(--tiktok-cyan); font-size:14px;"><i class="fa-solid fa-bolt"></i> Phantom & Solflare (Solana)</strong>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Open <strong>Activity (⚡)</strong> -> Tap the recent sent transaction -> Tap <strong>Signature / TxID</strong> to copy.</p>
+                </div>
+
+                <!-- Trust Wallet -->
+                <div class="guide-wallet-box margin-top-12">
+                    <strong style="color:var(--tiktok-pink); font-size:14px;"><i class="fa-solid fa-shield-halved"></i> Trust Wallet & MetaMask</strong>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Tap <strong>Sent Transaction</strong> -> Select <strong>More Details</strong> -> Copy <strong>Transaction Hash / TxHash</strong>.</p>
+                </div>
+
+                <!-- Binance / CashApp -->
+                <div class="guide-wallet-box margin-top-12">
+                    <strong style="color:#fff; font-size:14px;"><i class="fa-solid fa-building-columns"></i> Binance / CashApp / Exodus / Kraken</strong>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Go to <strong>Wallet History / Transactions</strong> -> Tap <strong>Withdrawal Details</strong> -> Copy the <strong>TxID</strong> code.</p>
+                </div>
+            </div>
+
+            <button type="button" class="btn-add-cart-primary margin-top-20" id="btn-close-txid-guide" style="padding:14px;">
+                Got It, Return to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Live Social Proof Toast -->
+    <div id="social-proof-toast" class="social-proof-toast hidden">
+        <img src="https://unavatar.io/tiktok/alex" alt="User" class="sp-avatar">
+        <div class="sp-text">
+            <strong id="sp-user-name">User @alex_vibe</strong>
+            <div class="text-muted" id="sp-user-action">just ordered 2,500 followers • 2m ago</div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -731,7 +731,28 @@
                 <button id="btn-launch-roulette" class="btn-launch">🚀 LAUNCH ROULETTE WHEEL</button>
             </div>
 
-            <!-- APP CARD 2: PLINKO BIDDING DUEL (COMING SOON) -->
+            <!-- APP CARD 2: EENON TIKTOK BOOST (TIKTOK FOLLOWS PLATFORM) -->
+            <div class="app-card active">
+                <span class="app-badge badge-active">● ACTIVE & READY</span>
+                <div>
+                    <div class="app-icon-wrapper">
+                        <span>🚀</span>
+                    </div>
+                    <h2 class="app-name">Eenon TikTok Boost Platform</h2>
+                    <p class="app-desc">Web3 TikTok follower growth engine with automated SMM fulfillment and dedicated crypto checkout (BTC, SOL, LTC).</p>
+                    
+                    <ul class="feature-list">
+                        <li><span class="feature-icon">✓</span> Instant Follower Dispatch & Delivery</li>
+                        <li><span class="feature-icon">✓</span> 100% Dedicated Crypto Checkout</li>
+                        <li><span class="feature-icon">✓</span> Automated Order Management</li>
+                        <li><span class="feature-icon">✓</span> Guaranteed 24-Hour Fulfillment</li>
+                    </ul>
+                </div>
+                
+                <button id="btn-launch-follows" class="btn-launch">🚀 LAUNCH TIKTOK BOOST</button>
+            </div>
+
+            <!-- APP CARD 3: PLINKO BIDDING DUEL (COMING SOON) -->
             <div class="app-card locked">
                 <span class="app-badge badge-locked">🔒 COMING SOON</span>
                 <div>
@@ -904,6 +925,16 @@
                 window.location.href = token ? `/?token=${token}` : `/`;
             }, 300);
         });
+
+        const btnLaunchFollows = document.getElementById("btn-launch-follows");
+        if (btnLaunchFollows) {
+            btnLaunchFollows.addEventListener("click", () => {
+                btnLaunchFollows.textContent = "⏳ LAUNCHING...";
+                setTimeout(() => {
+                    window.location.href = "/follows/";
+                }, 300);
+            });
+        }
 
         function showMessage(text, type) {
             messageBox.className = `message-box ${type}`;
