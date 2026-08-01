@@ -831,8 +831,10 @@ function applySettingsUpdate(data) {
         if (dom.lockedBadgeContainer) {
             if (data.entriesLocked) {
                 dom.lockedBadgeContainer.classList.remove('hidden');
+                if (dom.modeBadge) dom.modeBadge.classList.add('hidden');
             } else {
                 dom.lockedBadgeContainer.classList.add('hidden');
+                if (dom.modeBadge) dom.modeBadge.classList.remove('hidden');
             }
         }
     }
