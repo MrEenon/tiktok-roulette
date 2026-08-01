@@ -829,6 +829,9 @@ function applySettingsUpdate(data) {
         game.config.entriesLocked = data.entriesLocked;
         if (dom.setLockEntries) dom.setLockEntries.checked = data.entriesLocked;
         if (dom.lockedBadgeContainer) {
+            const lockIcons = dom.lockedBadgeContainer.querySelectorAll('.badge-icon');
+            lockIcons.forEach(el => el.textContent = '🔒');
+            
             if (data.entriesLocked) {
                 dom.lockedBadgeContainer.classList.remove('hidden');
                 if (dom.modeBadge) dom.modeBadge.classList.add('hidden');
@@ -957,14 +960,17 @@ function applySettingsUpdate(data) {
         updateTimerDisplay();
     }
     
-    if (game.config.gameMode === 'elimination') {
-        dom.modeBadge.className = 'mode-badge elimination-mode';
-        dom.badgeText.textContent = 'ELIMINATION MODE';
-        document.querySelectorAll('.badge-icon').forEach(el => el.textContent = '💀');
-    } else {
-        dom.modeBadge.className = 'mode-badge winner-mode';
-        dom.badgeText.textContent = 'WINNER MODE';
-        document.querySelectorAll('.badge-icon').forEach(el => el.textContent = '🏆');
+    if (dom.modeBadge) {
+        const modeIcons = dom.modeBadge.querySelectorAll('.badge-icon');
+        if (game.config.gameMode === 'elimination') {
+            dom.modeBadge.className = 'mode-badge elimination-mode';
+            dom.badgeText.textContent = 'ELIMINATION MODE';
+            modeIcons.forEach(el => el.textContent = '💀');
+        } else {
+            dom.modeBadge.className = 'mode-badge winner-mode';
+            dom.badgeText.textContent = 'WINNER MODE';
+            modeIcons.forEach(el => el.textContent = '🏆');
+        }
     }
     
     recalculateCoinsAndPlayers();
